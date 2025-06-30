@@ -1,0 +1,566 @@
+<?php
+session_start();
+include_once("config.php");
+include_once("header.php");
+
+$existing_data = array();
+
+if (isset($_SESSION['inserted_id'])) {
+    if ($_SESSION['inserted_id'] != '') {
+        $evaluacion_id = $_SESSION['inserted_id'];
+
+        // Recuperar datos existentes
+        $query = "SELECT * FROM evaluacion WHERE id = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("i", $evaluacion_id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $existing_data = $result->fetch_assoc();
+        $stmt->close();
+    }
+}
+
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    // Recibir y validar datos del formulario
+    $nombre = $_POST['nombre'] ?? '';
+    $rut = $_POST['rut'] ?? '';
+    $fecha_nacimiento = $_POST['fecha-nacimiento'] ?? '';
+    try {
+        $fecha_nacimiento_obj = new DateTime($fecha_nacimiento);
+        $fecha_nacimiento = $fecha_nacimiento_obj->format('Y-m-d');
+    } catch (Exception $e) {
+        $fecha_nacimiento = null;
+    }
+    $edad = $_POST['edad'] ?? '';
+    $escolaridad = $_POST['escolaridad'] ?? '';
+    $region = $_POST['region'] ?? '';
+    $localidad = $_POST['localidad'] ?? '';
+    $zona = $_POST['zona'] ?? '';
+    $sexo = $_POST['sexo'] ?? '';
+    $diversidad = $_POST['diversidad'] ?? '';
+    $diversidad_cual = $_POST['diversidad-cual'] ?? '';
+    $nacionalidad = $_POST['nacionalidad'] ?? '';
+    $pais_origen = $_POST['pais-origen'] ?? '';
+    $situacion_migratoria = $_POST['situacion-migratoria'] ?? '';
+    $pueblo = $_POST['pueblo'] ?? '';
+    $pueblo_cual = $_POST['pueblo-cual'] ?? '';
+    $convivencia = isset($_POST['convivencia']) ? implode(",", $_POST['convivencia']) : '';
+    $maltrato = isset($_POST['maltrato']) ? implode(",", $_POST['maltrato']) : '';
+    $otro_maltrato = $_POST['otro-maltrato'] ?? '';
+    $relacion_perpetrador = $_POST['relacion-perpetrador'] ?? '';
+    $otro_relacion = $_POST['otro-relacion'] ?? '';
+    $fuente = isset($_POST['fuente']) ? implode(",", $_POST['fuente']) : '';
+    $evaluador = $_POST['evaluador'] ?? '';
+    $profesion = $_POST['profesion'] ?? '';
+    $centro = $_POST['centro'] ?? '';
+    $fecha_evaluacion = $_POST['fecha-evaluacion'] ?? '';
+    $userid = $_SESSION['userid'];
+    try {
+        $fecha_evaluacion_obj = new DateTime($fecha_evaluacion);
+        $fecha_evaluacion = $fecha_evaluacion_obj->format('Y-m-d');
+    } catch (Exception $e) {
+        $fecha_evaluacion = null;
+    }
+
+    if (isset($_SESSION['inserted_id'])) {
+        // Actualizar registro existente
+        $evaluacion_id = $_SESSION['inserted_id'];
+
+        $query = "UPDATE evaluacion SET nombre = ?, rut = ?, fecha_nacimiento = ?, edad = ?, escolaridad = ?, region = ?, localidad = ?, zona = ?, sexo = ?, diversidad = ?, diversidad_cual = ?, nacionalidad = ?, pais_origen = ?, situacion_migratoria = ?, pueblo = ?, pueblo_cual = ?, convivencia = ?, maltrato = ?, otro_maltrato = ?, relacion_perpetrador = ?, otro_relacion = ?, fuente = ?, evaluador = ?, profesion = ?, centro = ?, fecha_evaluacion = ? WHERE id = ?";
+
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param(
+            "sssissssssssssssssssssssssi", 
+            $nombre, $rut, $fecha_nacimiento, $edad, $escolaridad, $region, $localidad, $zona, $sexo, $diversidad, $diversidad_cual, $nacionalidad, $pais_origen, $situacion_migratoria, $pueblo, $pueblo_cual, $convivencia, $maltrato, $otro_maltrato, $relacion_perpetrador, $otro_relacion, $fuente, $evaluador, $profesion, $centro, $fecha_evaluacion, $evaluacion_id
+        );
+
+        if ($stmt->execute()) {
+            header('Location: seccion2b.php');
+            exit();
+        } else {
+            echo "Error al actualizar el registro: " . $stmt->error;
+        }
+        $stmt->close();
+    } else {
+        // Insertar nuevo registro
+        $query = "INSERT INTO evaluacion (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id) 
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	print_r($_POST);
+        if ($stmt = $conn->prepare($query)) {
+            $stmt->bind_param(
+                "sssissssssssssssssssssssssi", 
+                $nombre, $rut, $fecha_nacimiento, $edad, $escolaridad, $region, $localidad, $zona, $sexo, $diversidad, $diversidad_cual, $nacionalidad, $pais_origen, $situacion_migratoria, $pueblo, $pueblo_cual, $convivencia, $maltrato, $otro_maltrato, $relacion_perpetrador, $otro_relacion, $fuente, $evaluador, $profesion, $centro, $fecha_evaluacion, $userid
+            );
+
+            if ($stmt->execute()) {
+                $inserted_id = $conn->insert_id;
+                $_SESSION['inserted_id'] = $inserted_id;
+                header('Location: seccion2b.php');
+                exit();
+            } else {
+                echo "Error al guardar el registro: " . $stmt->error;
+            }
+            $stmt->close();
+        } else {
+            echo "Error de preparación de la consulta: " . $conn->error;
+        }
+    }
+    $conn->close();
+}
+
+?>
+
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Información del Niño, Niña o Adolescente</title>
+    <!-- Incluir Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <!-- Estilos personalizados -->
+    <style>
+        .card-header {
+            background-color: #d50032;
+            color: #ffffff;
+        }
+        .required::after {
+            content: " *";
+            color: red;
+        }
+        .form-section {
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Información del Niño, Niña o Adolescente</h2>
+    <form method="POST" action="">
+
+        <!-- Información Personal -->
+        <div class="card form-section">
+            <div class="card-header">
+                <h5 class="mb-0">Información Personal</h5>
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <!-- Nombre -->
+                    <div class="form-group col-md-6">
+                        <label for="nombre" class="required">Nombre</label>
+                        <input type="text" class="form-control" id="nombre" name="nombre" value="<?php echo htmlspecialchars($existing_data['nombre'] ?? ''); ?>" required>
+                    </div>
+
+                    <!-- RUT -->
+                    <div class="form-group col-md-6">
+                        <label for="rut" class="required">RUT</label>
+                        <input type="text" class="form-control" id="rut" name="rut" value="<?php echo htmlspecialchars($existing_data['rut'] ?? ''); ?>" required pattern="\d{1,8}-[0-9kK]" title="Formato: 12345678-9 o 12345678-K">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Fecha de nacimiento -->
+                    <div class="form-group col-md-4">
+                        <label for="fecha-nacimiento" class="required">Fecha de Nacimiento</label>
+                        <input type="date" class="form-control" id="fecha-nacimiento" name="fecha-nacimiento" value="<?php echo htmlspecialchars($existing_data['fecha_nacimiento'] ?? ''); ?>" required>
+                    </div>
+
+                    <!-- Edad -->
+                    <div class="form-group col-md-2">
+                        <label for="edad" class="required">Edad</label>
+                        <input type="number" class="form-control" id="edad" name="edad" value="<?php echo htmlspecialchars($existing_data['edad'] ?? ''); ?>" min="1" max="120" required>
+                    </div>
+
+                    <!-- Nivel de escolaridad -->
+                    <div class="form-group col-md-6">
+                        <label for="escolaridad" class="required">Nivel de Escolaridad</label>
+                        <select class="form-control" id="escolaridad" name="escolaridad" >
+                            <option value="">Seleccione nivel</option>
+                            <?php
+                            $niveles_escolaridad = [
+                                "Prekínder", "Kínder", "Primero Básico", "Segundo Básico", "Tercero Básico",
+                                "Cuarto Básico", "Quinto Básico", "Sexto Básico", "Séptimo Básico", "Octavo Básico",
+                                "Primero Medio", "Segundo Medio", "Tercero Medio", "Cuarto Medio",
+                                "Técnico Superior", "Universitario", "Postgrado"
+                            ];
+                            foreach ($niveles_escolaridad as $nivel) {
+                                $selected = ($existing_data['escolaridad'] ?? '') == $nivel ? 'selected' : '';
+                                echo "<option value=\"$nivel\" $selected>$nivel</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información Demográfica -->
+        <div class="card form-section">
+            <div class="card-header">
+                <h5 class="mb-0">Información Demográfica</h5>
+            </div>
+            <div class="card-body">
+
+        <div class="form-row">
+            <!-- Región -->
+            <div class="form-group col-md-6">
+                <label for="region" class="required">Región</label>
+                <select class="form-control" id="region" name="region" required>
+                    <option value="">Seleccione una región</option>
+                    <?php
+                    $regiones = [
+                        "Arica y Parinacota", "Tarapacá", "Antofagasta", "Atacama", "Coquimbo", "Valparaíso",
+                        "Metropolitana", "O'Higgins", "Maule", "Ñuble", "Biobío", "Araucanía",
+                        "Los Ríos", "Los Lagos", "Aysén", "Magallanes"
+                    ];
+                    foreach ($regiones as $region) {
+                        $selected = ($existing_data['region'] ?? '') == $region ? 'selected' : '';
+                        echo "<option value=\"$region\" $selected>$region</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+
+            <!-- Localidad -->
+            <div class="form-group col-md-6">
+                <label for="localidad" class="required">Localidad</label>
+                <input type="text" class="form-control" id="localidad" name="localidad" value="<?php echo htmlspecialchars($existing_data['localidad'] ?? ''); ?>" required>
+            </div>
+        </div>
+
+                <div class="form-row">
+                    <!-- Zona -->
+                    <div class="form-group col-md-4">
+                        <label class="required">Zona de Residencia</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="urbana" name="zona" value="urbana" <?php if (($existing_data['zona'] ?? '') == 'urbana') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="urbana">Urbana</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="rural" name="zona" value="rural" <?php if (($existing_data['zona'] ?? '') == 'rural') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="rural">Rural</label>
+                        </div>
+                    </div>
+
+                    <!-- Sexo -->
+                    <div class="form-group col-md-4">
+                        <label class="required">Sexo</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="hombre" name="sexo" value="hombre" <?php if (($existing_data['sexo'] ?? '') == 'hombre') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="hombre">Hombre</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="mujer" name="sexo" value="mujer" <?php if (($existing_data['sexo'] ?? '') == 'mujer') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="mujer">Mujer</label>
+                        </div>
+                    </div>
+
+                    <!-- Diversidad sexual o de género -->
+                    <div class="form-group col-md-4">
+                        <label class="required">Diversidad Sexual o de Género</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="no-diversidad" name="diversidad" value="no" <?php if (($existing_data['diversidad'] ?? '') == 'no') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="no-diversidad">No</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="si-diversidad" name="diversidad" value="si" <?php if (($existing_data['diversidad'] ?? '') == 'si') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="si-diversidad">Sí</label>
+                        </div>
+                        <input type="text" class="form-control mt-2" id="diversidad-cual" name="diversidad-cual" placeholder="Especifique" value="<?php echo htmlspecialchars($existing_data['diversidad_cual'] ?? ''); ?>" <?php if (($existing_data['diversidad'] ?? '') == 'si') echo ''; ?>>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Nacionalidad -->
+                    <div class="form-group col-md-4">
+                        <label class="required">Nacionalidad</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="chileno" name="nacionalidad" value="chileno" <?php if (($existing_data['nacionalidad'] ?? '') == 'chileno') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="chileno">Chileno/a</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="extranjero" name="nacionalidad" value="extranjero" <?php if (($existing_data['nacionalidad'] ?? '') == 'extranjero') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="extranjero">Extranjero/a</label>
+                        </div>
+                    </div>
+
+                    <!-- País de origen -->
+                    <div class="form-group col-md-4">
+                        <label for="pais-origen">País de Origen</label>
+                        <select class="form-control" id="pais-origen" name="pais-origen">
+                            <option value="">Seleccione el país de origen</option>
+                            <?php
+                            $paises = [
+                    "Afganistán", "Albania", "Alemania", "Andorra", "Angola", "Antigua y Barbuda",
+                    "Arabia Saudita", "Argelia", "Argentina", "Armenia", "Australia", "Austria",
+                    "Azerbaiyán", "Bahamas", "Bangladés", "Barbados", "Baréin", "Bélgica",
+                    "Belice", "Benín", "Bielorrusia", "Birmania", "Bolivia", "Bosnia y Herzegovina",
+                    "Botsuana", "Brasil", "Brunéi", "Bulgaria", "Burkina Faso", "Burundi",
+                    "Bután", "Cabo Verde", "Camboya", "Camerún", "Canadá", "Catar", "Chad",
+                    "Chequia", "Chile", "China", "Chipre", "Ciudad del Vaticano", "Colombia",
+                    "Comoras", "Corea del Norte", "Corea del Sur", "Costa de Marfil",
+                    "Costa Rica", "Croacia", "Cuba", "Dinamarca", "Dominica", "Ecuador",
+                    "Egipto", "El Salvador", "Emiratos Árabes Unidos", "Eritrea", "Eslovaquia",
+                    "Eslovenia", "España", "Estados Unidos", "Estonia", "Esuatini", "Etiopía",
+                    "Filipinas", "Finlandia", "Fiyi", "Francia", "Gabón", "Gambia", "Georgia",
+                    "Ghana", "Granada", "Grecia", "Guatemala", "Guyana", "Guinea",
+                    "Guinea-Bisáu", "Guinea Ecuatorial", "Haití", "Honduras", "Hungría", "India",
+                    "Indonesia", "Irak", "Irán", "Irlanda", "Islandia", "Islas Marshall",
+                    "Islas Salomón", "Israel", "Italia", "Jamaica", "Japón", "Jordania",
+                    "Kazajistán", "Kenia", "Kirguistán", "Kiribati", "Kuwait", "Laos",
+                    "Lesoto", "Letonia", "Líbano", "Liberia", "Libia", "Liechtenstein",
+                    "Lituania", "Luxemburgo", "Madagascar", "Malasia", "Malaui", "Maldivas",
+                    "Malí", "Malta", "Marruecos", "Mauricio", "Mauritania", "México",
+                    "Micronesia", "Moldavia", "Mónaco", "Mongolia", "Montenegro", "Mozambique",
+                    "Namibia", "Nauru", "Nepal", "Nicaragua", "Níger", "Nigeria", "Noruega",
+                    "Nueva Zelanda", "Omán", "Países Bajos", "Pakistán", "Palaos", "Panamá",
+                    "Papúa Nueva Guinea", "Paraguay", "Perú", "Polonia", "Portugal",
+                    "Reino Unido", "República Centroafricana", "República Checa", "República del Congo",
+                    "República Democrática del Congo", "República Dominicana", "Ruanda",
+                    "Rumania", "Rusia", "Samoa", "San Cristóbal y Nieves", "San Marino",
+                    "San Vicente y las Granadinas", "Santa Lucía", "Santo Tomé y Príncipe",
+                    "Senegal", "Serbia", "Seychelles", "Sierra Leona", "Singapur", "Siria",
+                    "Somalia", "Sri Lanka", "Sudáfrica", "Sudán", "Sudán del Sur", "Suecia",
+                    "Suiza", "Surinam", "Tailandia", "Tanzania", "Tayikistán", "Timor Oriental",
+                    "Togo", "Tonga", "Trinidad y Tobago", "Túnez", "Turkmenistán", "Turquía",
+                    "Tuvalu", "Ucrania", "Uganda", "Uruguay", "Uzbekistán", "Vanuatu",
+                    "Venezuela", "Vietnam", "Yemen", "Yibuti", "Zambia", "Zimbabue"
+                ];
+                                foreach ($paises as $pais) {
+                    $selected = ($existing_data['pais_origen'] ?? '') == $pais ? 'selected' : '';
+                    echo "<option value=\"$pais\" $selected>$pais</option>";
+                }
+                ?>
+                        </select>
+                    </div>
+
+                    <!-- Situación migratoria -->
+                    <div class="form-group col-md-4">
+                        <label for="situacion-migratoria">Situación Migratoria</label>
+                        <select class="form-control" id="situacion-migratoria" name="situacion-migratoria">
+    <option value="">Seleccione su situación migratoria</option>
+    <?php
+    $situaciones = [
+        "Residente permanente", "Residente temporal", "Visa de trabajo", "Visa de estudiante",
+        "Asilado o refugiado", "En proceso de regularización", "Indocumentado", "Turista", "Otro"
+    ];
+
+    foreach ($situaciones as $situacion) {
+        $selected = ($existing_data['situacion_migratoria'] ?? '') == $situacion ? 'selected' : '';
+        echo "<option value=\"$situacion\" $selected>$situacion</option>";
+    }
+    ?>
+</select>
+
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <!-- Pueblo originario -->
+                    <div class="form-group col-md-6">
+                        <label class="required">¿Pertenece a un Pueblo Originario?</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="no-pueblo" name="pueblo" value="no" <?php if (($existing_data['pueblo'] ?? '') == 'no') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="no-pueblo">No</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="si-pueblo" name="pueblo" value="si" <?php if (($existing_data['pueblo'] ?? '') == 'si') echo 'checked'; ?> >
+                            <label class="custom-control-label" for="si-pueblo">Sí</label>
+                        </div>
+                        <select class="form-control mt-2" id="pueblo-cual" name="pueblo-cual" <?php if (($existing_data['pueblo'] ?? '') == 'si') echo ''; ?>>
+    <option value="">Seleccione el pueblo originario</option>
+    <?php
+    $pueblos = [
+        "Aymara", "Diaguita", "Kawésqar", "Lican Antai (Atacameño)", "Mapuche",
+        "Quechua", "Rapa Nui", "Yagán", "Otro"
+    ];
+
+    foreach ($pueblos as $pueblo) {
+        $selected = ($existing_data['pueblo_cual'] ?? '') == $pueblo ? 'selected' : '';
+        echo "<option value=\"$pueblo\" $selected>$pueblo</option>";
+    }
+    ?>
+</select>
+
+                    </div>
+
+                    <!-- Con quienes vive -->
+                    <div class="form-group col-md-6">
+                        <label class="required">Con Quiénes Vive</label>
+                        <?php
+                        $convivencia_options = ['madre', 'padre', 'otros'];
+                        $convivencia_selected = explode(',', $existing_data['convivencia'] ?? '');
+                        foreach ($convivencia_options as $option) {
+                            $checked = in_array($option, $convivencia_selected) ? 'checked' : '';
+                            echo '<div class="custom-control custom-checkbox">';
+                            echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"$option\" name=\"convivencia[]\" value=\"$option\" $checked>";
+                            echo "<label class=\"custom-control-label\" for=\"$option\">" . ucfirst($option) . "</label>";
+                            echo '</div>';
+                        }
+                        ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Información del Maltrato -->
+        <div class="card form-section">
+            <div class="card-header">
+                <h5 class="mb-0">Información del Maltrato</h5>
+            </div>
+            <div class="card-body">
+                <!-- Tipo de maltrato -->
+                <div class="form-group">
+                    <label class="required">Tipo de Maltrato del Ingreso Actual</label>
+                    <?php
+                    $maltrato_options = ['fisico', 'psicologico', 'negligencia', 'abuso'];
+                    $maltrato_selected = explode(',', $existing_data['maltrato'] ?? '');
+                    foreach ($maltrato_options as $option) {
+                        $checked = in_array($option, $maltrato_selected) ? 'checked' : '';
+                        echo '<div class="custom-control custom-checkbox">';
+                        echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"$option\" name=\"maltrato[]\" value=\"$option\" $checked>";
+                        echo "<label class=\"custom-control-label\" for=\"$option\">Maltrato " . ucfirst($option) . "</label>";
+                        echo '</div>';
+                    }
+                    ?>
+                    <input type="text" class="form-control mt-2" id="otro-maltrato" name="otro-maltrato" placeholder="Otro tipo de maltrato (especificar)" value="<?php echo htmlspecialchars($existing_data['otro_maltrato'] ?? ''); ?>">
+                </div>
+
+                <!-- Relación con el presunto perpetrador -->
+                <div class="form-group">
+                    <label for="relacion-perpetrador" class="required">Relación con el Presunto Perpetrador</label>
+                    <select class="form-control" id="relacion-perpetrador" name="relacion-perpetrador" >
+                        <option value="" disabled <?php if (empty($existing_data['relacion_perpetrador'])) echo 'selected'; ?>>Seleccione una opción</option>
+                
+                <?php
+                $relaciones = ['padre', 'madre', 'hermano/a', 'otro-familiar', 'conocido', 'desconocido', 'otro'];
+                foreach ($relaciones as $relacion) {
+                    $selected = ($existing_data['relacion_perpetrador'] ?? '') == $relacion ? 'selected' : '';
+                    echo "<option value=\"$relacion\" $selected>" . ucfirst($relacion) . "</option>";
+                }
+                ?>
+                    </select>
+                    <input type="text" class="form-control mt-2" id="otro-relacion" name="otro-relacion" placeholder="Especifique otra relación" style="display: <?php echo ($existing_data['relacion_perpetrador'] ?? '') == 'otro' ? 'block' : 'none'; ?>;" value="<?php echo htmlspecialchars($existing_data['otro_relacion'] ?? ''); ?>">
+                </div>
+
+                <!-- Fuente de derivación -->
+                <div class="form-group">
+                    <label class="required">Fuente de Derivación</label>
+                    <?php
+                    $fuente_options = ['tribunales', 'oln'];
+                    $fuente_selected = explode(',', $existing_data['fuente'] ?? '');
+                    foreach ($fuente_options as $option) {
+                        $checked = in_array($option, $fuente_selected) ? 'checked' : '';
+                        echo '<div class="custom-control custom-checkbox">';
+                        echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"$option\" name=\"fuente[]\" value=\"$option\" $checked>";
+                        echo "<label class=\"custom-control-label\" for=\"$option\">" . ucfirst($option) . "</label>";
+                        echo '</div>';
+                    }
+                    ?>
+                </div>
+            </div>
+        </div>
+<!-- Información del Evaluador -->
+<div class="card form-section">
+    <div class="card-header">
+        <h5 class="mb-0">Información del Evaluador</h5>
+    </div>
+    <div class="card-body">
+        <div class="form-row">
+            <!-- Nombre del evaluador -->
+            <div class="form-group col-md-6">
+                <label for="evaluador" class="required">Nombre del Evaluador</label>
+                <input type="text" class="form-control" id="evaluador" name="evaluador" value="<?php echo htmlspecialchars($existing_data['evaluador'] ?? $_SESSION['name'] ?? ''); ?>" >
+            </div>
+
+            <!-- Profesión -->
+            <div class="form-group col-md-6">
+                <label class="required">Profesión</label>
+                <?php
+                $profesiones = ['psicologia' => 'Psicología', 'trabajo-social' => 'Trabajo Social'];
+                foreach ($profesiones as $value => $label) {
+                    $checked = (($existing_data['profesion'] ?? '') == $value) ? 'checked' : '';
+                    echo '<div class="custom-control custom-radio">';
+                    echo "<input type=\"radio\" class=\"custom-control-input\" id=\"$value\" name=\"profesion\" value=\"$value\" $checked >";
+                    echo "<label class=\"custom-control-label\" for=\"$value\">$label</label>";
+                    echo '</div>';
+                }
+                ?>
+            </div>
+        </div>
+
+        <!-- Nombre del centro -->
+        <div class="form-group">
+            <label for="centro" class="required">Nombre del Centro</label>
+            <input type="text" class="form-control" id="centro" name="centro" value="<?php echo htmlspecialchars($existing_data['centro'] ?? ''); ?>" required>
+        </div>
+
+        <!-- Fecha de evaluación -->
+        <div class="form-group">
+            <label for="fecha-evaluacion" class="required">Fecha de Evaluación</label>
+            <input type="date" class="form-control" id="fecha-evaluacion" name="fecha-evaluacion" value="<?php echo htmlspecialchars($existing_data['fecha_evaluacion'] ?? ''); ?>" >
+        </div>
+    </div>
+</div>
+
+
+        <!-- Botones de acción -->
+        <div class="form-group text-right">
+            <button type="submit" class="btn btn-primary">Guardar y Continuar</button>
+            <?php 
+            if(isset($_SESSION['inserted_id']))
+            if($_SESSION['inserted_id'] != ''){ ?>
+            <a href="resumenb.php" class="btn btn-secondary">Ir al Resumen</a>
+            <?php } ?>
+        </div>
+    </form>
+</div>
+
+<!-- Scripts de Bootstrap y dependencias -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script>
+    // Mostrar/ocultar campos según selección
+    $(document).ready(function() {
+        // Diversidad sexual o de género
+        $('input[name="diversidad"]').change(function() {
+            if ($(this).val() === 'si') {
+               $('#diversidad-cual').show();
+            } else {
+                $('#diversidad-cual').hide();
+            }
+        }).trigger('change');
+
+        // Pertenece a pueblo originario
+        $('input[name="pueblo"]').change(function() {
+            if ($(this).val() === 'si') {
+                $('#pueblo-cual').show();
+            } else {
+                $('#pueblo-cual').hide();
+            }
+        }).trigger('change');
+
+        // Nacionalidad
+        $('input[name="nacionalidad"]').change(function() {
+            if ($(this).val() === 'extranjero') {
+                $('#pais-origen, #situacion-migratoria').prop('disabled', false);
+            } else {
+                $('#pais-origen, #situacion-migratoria').prop('disabled', true).val('');
+            }
+        }).trigger('change');
+
+        // Relación con el presunto perpetrador
+        $('#relacion-perpetrador').change(function() {
+            if ($(this).val() === 'otro') {
+               $('#otro-relacion').show();
+            } else {
+                $('#otro-relacion').hide().val('');
+            }
+        }).trigger('change');
+    });
+</script>
+<!-- Bootstrap JS Bundle (incluye Popper.js) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

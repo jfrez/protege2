@@ -1,0 +1,96 @@
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    height: 100vh;
+    width: 100%;
+    display: flex;
+}
+
+.main-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* Mitad izquierda: contenedor del formulario */
+.left-side {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0); /* Fondo blanco en la parte izquierda (opcional) */
+}
+
+.container {
+    /* El contenedor del formulario antes estaba centrado en el body,
+       ahora lo mantenemos con el mismo estilo pero dentro de .left-side */
+    background: rgba(255, 255, 255, 0.9); /* Fondo semi-transparente para diferenciar del fondo general */
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+.container img {
+    width: 150px; 
+    margin-bottom: 20px;
+}
+
+.container h2 {
+    margin-bottom: 25px;
+    font-size: 24px;
+    color: #B20D30; /* Rojo UDP */
+}
+
+.container form {
+    display: flex;
+    flex-direction: column;
+}
+
+.container form input {
+    padding: 15px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    outline: none;
+    font-size: 16px;
+}
+
+.container form button {
+    padding: 15px;
+    background: #B20D30; /* Rojo UDP */
+    border: none;
+    border-radius: 8px;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.container form button:hover {
+    background: #860923; /* Versión más oscura del rojo UDP */
+}
+
+.switch {
+    margin-top: 15px;
+}
+
+.switch a {
+    color: #58595B; /* Gris UDP */
+    text-decoration: none;
+}
+
+/* Mitad derecha: imagen de fondo con degradado */
+
+
+.background{
+    z-index: -99999;
+    position: absolute;
+    top:0;
+    left: 50%;
+    height: 100vh; 
+    width: 50%;
+    background: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
+                url('familia.png') center center no-repeat;
+    background-size: cover;
+}
