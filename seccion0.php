@@ -14,8 +14,10 @@ include_once("header.php");
 <body>
 
 <div class="container mt-4 mb-5">
-
-    <h2>¿Cómo se aplica PROTEGE?</h2>
+<h1>
+Guía para la valoración del riesgo de recurrencia de victimización infantil
+</h1>
+    <h3>¿Cómo se aplica PROTEGE?</h3>
     <p>
         La utilización de PROTEGE supone cuatro pasos generales.
     </p>
@@ -94,7 +96,7 @@ include_once("header.php");
         El juicio o valoración global del riesgo es de índole cualitativa, y no debe estar guiada por una simple sumatoria de 
         los factores analizados, pues su peso y configuración es única en cada caso particular. De hecho, la presencia de ciertos 
         factores puede ser gravitante por sí misma para incrementar el riesgo asociado de recurrencia victimal, como lo es, por 
-        ejemplo, la ideación homicida de la persona cuidadora.
+        ejemplo, la ideación suicida de la persona cuidadora.
         <br><br>
         <strong>El juicio global respecto al nivel de riesgo está estructurado en tres niveles:</strong>
         <ul>

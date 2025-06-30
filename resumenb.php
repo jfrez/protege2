@@ -23,18 +23,21 @@ $errors = [];
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $valoracion_global = $_POST['valoracion_global'] ?? '';
     $comentarios = $_POST['comentarios'] ?? '';
-
+    $obs_caracterizacion = $_POST['obs_caracterizacion'] ?? '';
+    $obs_variables_extra = $_POST['obs_variables_extra'] ?? '';
+    if (empty($obs_caracterizacion)) { $errors['obs_caracterizacion'] = 'Complete la observación 1.';}
     if (empty($valoracion_global)) {
         $errors['valoracion_global'] = "Por favor, seleccione una valoración global del nivel de riesgo.";
     }
 
     if (empty($errors)) {
-        $query = "UPDATE evaluacion SET valoracion_global = ?, comentarios = ? WHERE id = ?";
-        $stmt = $conn->prepare($query);
+	    $query = "UPDATE evaluacion SET valoracion_global = ?, comentarios = ? WHERE id = ?";
+	   $query = "UPDATE evaluacion SET  valoracion_global = ?,\n obs_caracterizacion = ?, obs_variables_extra = ? WHERE id = ?";
+	    $stmt = $conn->prepare($query);
         if ($stmt === false) {
             die('Error en la preparación de la consulta: ' . $conn->error);
         }
-        $stmt->bind_param("ssi", $valoracion_global, $comentarios, $evaluacion_id);
+	$stmt->bind_param('sssi', $valoracion_global, $obs_caracterizacion,$obs_variables_extra, $evaluacion_id);
 
         if ($stmt->execute()) {
             header("Location: homepage.php");
@@ -67,13 +70,25 @@ $factores_familiares   = obtenerFactores('factores_familiares',   $evaluacion_id
 $factores_contextuales = obtenerFactores('factores_contextuales', $evaluacion_id, $conn);
 
 // Recuperar la valoración global y comentarios
-$query = "SELECT valoracion_global, comentarios FROM evaluacion WHERE id = ?";
+$query = "SELECT valoracion_global,
+                 obs_caracterizacion,
+                 obs_variables_extra
+          FROM evaluacion
+          WHERE id = ?";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $evaluacion_id);
 $stmt->execute();
-$stmt->bind_result($valoracion_global_actual, $comentarios_actuales);
+$stmt->bind_result(
+    $valoracion_global_actual,
+    $obs_caracterizacion_actual,
+    $obs_variables_extra_actual
+);
 $stmt->fetch();
 $stmt->close();
+
+
+
+
 
 // ===========================================================================
 // Definición de factores de RIESGO y PROTECCIÓN en arreglos separados
@@ -87,13 +102,13 @@ $factores_riesgo = [
     ],
     'Factores Familiares' => [
         'problemas_salud_mental_cuidadores' => '2.1. Problemas de salud mental de personas cuidadoras',
-        'consumo_problematico_cuidadores' => '2.2. Consumo problemático de alcohol y sustancias',
+        'consumo_problematico_cuidadores' => '2.2. Consumo problemático de alcohol y sustancias de personas cuidadoras',
         'violencia_pareja' => '2.3. Violencia en la pareja',
         'historia_maltrato_cuidadores' => '2.4. Historia de maltrato de personas cuidadoras',
         'antecedentes_penales_cuidadores' => '2.5. Antecedentes penales de personas cuidadoras',
         'dificultades_soporte_social' => '2.6. Dificultades de soporte social',
         'estres_supervivencia' => '2.7. Estrés de supervivencia',
-        'deficiencia_habilidades_cuidado' => '2.8. Deficiencia en habilidades de cuidado',
+        'deficiencia_habilidades_cuidado' => '2.8. Deficiencia en habilidades de cuidado de personas cuidadoras',
         'actitudes_negativas_nna' => '2.9. Actitudes negativas hacia el niño, niña o adolescente',
         'atencion_prenatal_retrasada_ausente' => '2.10. Atención prenatal retrasada o ausente',
         'inestabilidad_cuidados' => '2.11. Inestabilidad en los cuidados',
@@ -378,11 +393,47 @@ function enlaceEdicion($dimension) {
 
                 <hr>
                 <!-- Comentarios adicionales -->
-                <div class="form-group">
-                    <label>Comentarios adicionales (opcional):</label>
-                    <textarea class="form-control" name="comentarios" rows="4"><?php echo htmlspecialchars($comentarios_actuales ?? ''); ?></textarea>
-                </div>
+               <!-- 1. Caracterización -->
+<div class="form-group">
+    <label>
+        1. Considere la información de caracterización del niño, niña o adolescente
+        (edad, sexo, orientación sexual, identidad de género, etnia, situación migratoria).
+        En su experiencia, ¿alguna de estas variables aporta al riesgo o protección
+        frente a la victimización recurrente en este caso? ¿Cuál y por qué?
+    </label>
+    <textarea
+        class="form-control"
+        name="obs_caracterizacion"
+        rows="4"
+    ><?php echo htmlspecialchars($obs_caracterizacion_actual ?? ''); ?></textarea>
 
+    <?php if (isset($errors['obs_caracterizacion'])): ?>
+        <small class="text-danger">
+            <?php echo htmlspecialchars($errors['obs_caracterizacion']); ?>
+        </small>
+    <?php endif; ?>
+</div>
+
+<!-- 2. Variables adicionales -->
+<div class="form-group">
+    <label>
+        2. ¿Existe alguna variable de riesgo y/o protección adicional que no haya sido
+        mencionada en esta guía y que considere necesario tener presente en este caso
+        para evaluar el riesgo de recurrencia? ¿Cuál y por qué?
+    </label>
+    <textarea
+        class="form-control"
+        name="obs_variables_extra"
+        rows="4"
+    ><?php echo htmlspecialchars($obs_variables_extra_actual ?? ''); ?></textarea>
+
+    <?php if (isset($errors['obs_variables_extra'])): ?>
+        <small class="text-danger">
+            <?php echo htmlspecialchars($errors['obs_variables_extra']); ?>
+        </small>
+    <?php endif; ?>
+</div>
+ 
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary">Guardar Valoración</button>
                 </div>

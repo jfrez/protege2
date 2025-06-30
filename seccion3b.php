@@ -183,127 +183,149 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  * incluyendo un breve resumen de lo que significa, 
  * según el documento que proporcionaste.
  */
+
 $escalas = [
     // 2.1. Problemas de salud mental
     'problemas_salud_mental_cuidadores' => [
-        'a' => 'No es posible determinar — Falta información para evaluar el riesgo asociado a salud mental de las personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — Ninguna persona cuidadora presenta problemas mayores de salud mental.',
-        'c' => 'Riesgo medio — Al menos una persona cuidadora presenta problemas leves o moderados que interfieren parcialmente en su vida.',
-        'd' => 'Riesgo alto — Al menos una persona cuidadora presenta un problema mayor de salud mental que interfiere significativamente.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a problemas de salud mental en personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Ninguna de las personas cuidadoras presenta problemas significativos de salud mental, lo cual les permite desarrollar sus actividades cotidianas con normalidad.',
+        'c' => 'Riesgo medio — En la actualidad al menos una de las personas cuidadoras presenta algún problema de salud mental leve o moderado, que ha interferido el desarrollo de sus actividades cotidianas.',
+        'd' => 'Riesgo alto — En la actualidad al menos una de las personas cuidadoras presenta un problema mayor de salud mental, agudo o crónico, que interfiere de manera significativa el desarrollo de sus actividades cotidianas.'
     ],
+
     // 2.2. Consumo problemático de alcohol y sustancias
     'consumo_problematico_cuidadores' => [
-        'a' => 'No es posible determinar — Falta información acerca del consumo de alcohol o drogas en personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — No hay evidencia de consumo o es ocasional sin constituir uso problemático.',
-        'c' => 'Riesgo medio — Consumo recurrente que amenaza con volverse problemático, pero aún no se configura como tal.',
-        'd' => 'Riesgo alto — Al menos una persona cuidadora presenta consumo problemático de alcohol y/o drogas.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a consumo de alcohol y/o drogas por parte de padres o personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Las personas cuidadoras no presentan consumo de alcohol o drogas. Si lo presentan, es de carácter ocasional y no se considera como uso problemático.',
+        'c' => 'Riesgo medio — A lo menos una de las personas cuidadoras presenta consumo recurrente, que amenaza con constituirse en un consumo problemático, pero aún no se ha configurado como tal.',
+        'd' => 'Riesgo alto — A lo menos una de las personas cuidadoras presenta consumo problemático de alcohol y /o drogas.'
     ],
+
     // 2.3. Violencia en la pareja
     'violencia_pareja' => [
-        'a' => 'No es posible determinar — Falta información para evaluar la existencia de violencia doméstica.',
-        'b' => 'Riesgo nulo o bajo — No se registran hechos de violencia; puede haber conflictos, pero no constituyen violencia.',
-        'c' => 'Riesgo medio — Hubo violencia en la pareja, pero actualmente no está activa.',
-        'd' => 'Riesgo alto — Existen hechos de violencia en la pareja que ocurren actualmente.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a algún tipo de violencia doméstica.',
+        'b' => 'Riesgo nulo o bajo — No se registran antecedentes de violencia en la pareja en personas cuidadoras, si bien pueden existir situaciones de conflicto no constituyen hechos de violencia.',
+        'c' => 'Riesgo medio — Existen antecedentes de violencia en la pareja, pero esta violencia no está activa al momento del estudio del caso.',
+        'd' => 'Riesgo alto — Existen hechos de violencia de pareja que se producen actualmente en el contexto de cuidado del niño, niña o adolescente.'
     ],
+
     // 2.4. Historia de maltrato de personas cuidadoras
     'historia_maltrato_cuidadores' => [
-        'a' => 'No es posible determinar — Falta información sobre la historia de maltrato infantil en las personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — Sin antecedentes de maltrato en la infancia o se recibió apoyo terapéutico oportuno.',
-        'c' => 'Riesgo medio — Episodios de maltrato o negligencia leve/moderada durante la infancia de la persona cuidadora.',
-        'd' => 'Riesgo alto — Maltrato o negligencia grave y/o sistemática en la infancia de la persona cuidadora.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a historia de violencia de padres o personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Ninguna de las personas cuidadoras presenta antecedentes de maltrato o negligencia durante su infancia. En caso de que alguno refiera experiencias de maltrato o negligencia durante su infancia, contaron con el apoyo terapéutico necesario.',
+        'c' => 'Riesgo medio — Alguna o ambas personas cuidadoras refieren episodios de maltrato infantil o negligencia de carácter leve o moderado.',
+        'd' => 'Riesgo alto — Alguna o ambas personas cuidadoras refieren episodios de maltrato infantil o negligencia de carácter grave y/o sistemáticos en el tiempo.'
     ],
+
     // 2.5. Antecedentes penales de personas cuidadoras
     'antecedentes_penales_cuidadores' => [
-        'a' => 'No es posible determinar — No hay información suficiente acerca de antecedentes penales de las personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — Ninguna de las personas cuidadoras cuenta con antecedentes penales.',
-        'c' => 'Riesgo medio — Antecedentes penales leves (sin violencia) en una o más personas cuidadoras.',
-        'd' => 'Riesgo alto — Antecedentes penales graves o delitos con violencia en una o más personas cuidadoras.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a antecedentes penales de padres o personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Ninguno de los padres o personas cuidadoras del niño, niña o adolescente cuenta con antecedentes penales.',
+        'c' => 'Riesgo medio — Uno o más de los padres o personas cuidadoras del niño, niña o adolescente cuenta con antecedentes penales, pero son delitos menores sin uso de la violencia.',
+        'd' => 'Riesgo alto — Uno o más padres o personas cuidadoras del niño, niña o adolescente cuentan con antecedentes penales por hechos graves, o bien son delitos menos graves con utilización de la violencia.'
     ],
+
     // 2.6. Dificultades de soporte social
     'dificultades_soporte_social' => [
-        'a' => 'No es posible determinar — Falta información acerca de la red de apoyo social de la familia.',
-        'b' => 'Riesgo nulo o bajo — Existen buenas redes de apoyo y/o adecuado acceso a servicios sociales.',
-        'c' => 'Riesgo medio — Hay algunas redes de apoyo, pero limitadas; acceso a servicios acotado.',
-        'd' => 'Riesgo alto — Aislamiento social y/o acceso muy limitado a servicios que dificulta el cuidado.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a dificultad de soporte social.',
+        'b' => 'Riesgo nulo o bajo — El entorno familiar cuenta con buenas redes de apoyo en el contexto social y/o comunitario, así como un adecuado acceso a servicios.',
+        'c' => 'Riesgo medio — El entorno familiar cuenta con algunas redes de apoyo en el contexto social y/o comunitario, así como un acotado acceso a servicios.',
+        'd' => 'Riesgo alto — El entorno familiar se encuentra en condición de aislamiento social y/o un acceso muy limitado a servicios.'
     ],
+
     // 2.7. Estrés de supervivencia
     'estres_supervivencia' => [
-        'a' => 'No es posible determinar — Falta información para evaluar condiciones socioeconómicas de la familia.',
-        'b' => 'Riesgo nulo o bajo — La situación financiera/empleo cubre necesidades básicas; no hay estrés socioeconómico mayor.',
-        'c' => 'Riesgo medio — En el último año, la familia enfrentó problemas financieros o de empleo con repercusiones moderadas.',
-        'd' => 'Riesgo alto — Serios problemas financieros, de empleo o vivienda que ponen en riesgo la supervivencia familiar.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a estrés de supervivencia.',
+        'b' => 'Riesgo nulo o bajo — La situación financiera y de empleo de la familia o personas cuidadoras es suficiente para cubrir las necesidades básicas de sus miembros. No se aprecian problemas mayores de ingresos, empleo o vivienda.',
+        'c' => 'Riesgo medio — Durante el último año la familia ha enfrentado algunos problemas financieros, de empleo, vivienda inadecuada.',
+        'd' => 'Riesgo alto — Durante el último año la familia se ha visto desafiada en su supervivencia enfrentando serios problemas financieros, de empleo o vivienda.'
     ],
+
     // 2.8. Deficiencia en habilidades de cuidado
     'deficiencia_habilidades_cuidado' => [
-        'a' => 'No es posible determinar — Falta información para evaluar habilidades de crianza.',
-        'b' => 'Riesgo nulo o bajo — Habilidades de cuidado apropiadas al nivel de desarrollo del niño, niña o adolescente.',
-        'c' => 'Riesgo medio — Ciertas carencias en habilidades de cuidado que requieren atención o mejora.',
-        'd' => 'Riesgo alto — Serios déficits en habilidades de cuidado que ponen en riesgo el bienestar del NNA.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a deficiencia en habilidades de cuidado de personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Las habilidades de cuidado de padres o personas cuidadoras resultan apropiadas para responder a las necesidades del niño, niña o adolescente, de acuerdo a su nivel de desarrollo.',
+        'c' => 'Riesgo medio — Se identifican ciertas carencias en las habilidades de cuidado en las personas cuidadoras.',
+        'd' => 'Riesgo alto — Se identifican serios déficit en las habilidades de cuidado en los adultos a cargo del niño, niña o adolescente.'
     ],
+
     // 2.9. Actitudes negativas hacia el niño, niña o adolescente
     'actitudes_negativas_nna' => [
-        'a' => 'No es posible determinar — Falta información sobre las actitudes de las personas cuidadoras hacia el NNA.',
-        'b' => 'Riesgo nulo o bajo — No se observan actitudes negativas o hostiles hacia el NNA.',
-        'c' => 'Riesgo medio — Ocasionalmente se identifican actitudes negativas o conflictivas hacia el NNA.',
-        'd' => 'Riesgo alto — Frecuentes actitudes negativas o abiertamente hostiles hacia el NNA.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a actitudes negativas hacia el niño, niña o adolescente.',
+        'b' => 'Riesgo nulo o bajo — No se observan actitudes negativas hacia el niño, niña o adolescente, por parte de la(s) persona(s) cuidadora(s).',
+        'c' => 'Riesgo medio — De manera ocasional se identifican actitudes negativas hacia el niño, niña o adolescente por parte de la(s) persona(s) cuidadora(s).',
+        'd' => 'Riesgo alto — Frecuentemente se identifican actitudes negativas o abiertamente hostiles hacia el niño, niña o adolescente por parte de la(s) persona(s) cuidadora(s).'
     ],
+
     // 2.10. Atención prenatal retrasada o ausente
     'atencion_prenatal_retrasada_ausente' => [
-        'a' => 'No es posible determinar — Falta información para evaluar la atención prenatal de la madre.',
-        'b' => 'Riesgo nulo o bajo — Atención prenatal desde el primer trimestre y de forma completa.',
-        'c' => 'Riesgo medio — Atención prenatal iniciada en el segundo trimestre o intermitente.',
-        'd' => 'Riesgo alto — Atención prenatal solo en el tercer trimestre o nula.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a atención prenatal retrasada o ausente.',
+        'b' => 'Riesgo nulo o bajo — La madre recibió atención prenatal desde el primer trimestre del embarazo y durante toda su gestación.',
+        'c' => 'Riesgo medio — La madre recibió atención prenatal a partir del segundo trimestre del embarazo o de forma intermitente durante su gestación.',
+        'd' => 'Riesgo alto — La madre sólo recibió atención prenatal durante el tercer y último trimestre del embarazo o no recibió ningún seguimiento médico.'
     ],
+
     // 2.11. Inestabilidad en los cuidados
     'inestabilidad_cuidados' => [
-        'a' => 'No es posible determinar — Falta información sobre la estabilidad de personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — Cuidado estable con figuras claramente definidas y constantes.',
-        'c' => 'Riesgo medio — Algunas irregularidades o alternancia ocasional de personas cuidadoras.',
-        'd' => 'Riesgo alto — Multiplicidad de cuidadores y alta rotación que genera inestabilidad significativa.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar el riesgo asociado a inestabilidad en los cuidados (cambios de persona cuidadora).',
+        'b' => 'Riesgo nulo o bajo — El niño, niña o adolescente tiene una dinámica de cuidados estable, con personas cuidadoras definidas que se han mantenido en el tiempo.',
+        'c' => 'Riesgo medio — El niño, niña o adolescente presenta algunas irregularidades en la estabilidad de sus personas cuidadoras y en ocasiones alterna entre diferentes figuras.',
+        'd' => 'Riesgo alto — El niño, niña o adolescente presenta multiplicidad de personas cuidadoras, siendo complejo definir a las personas a cargo del cuidado, con alta inestabilidad en la dinámica familiar.'
     ],
+
     // 2.12. Ideación suicida de personas cuidadoras
     'ideacion_suicida_cuidadores' => [
-        'a' => 'No es posible determinar — Falta información acerca de ideaciones suicidas en las personas cuidadoras.',
-        'b' => 'Riesgo nulo o bajo — No hay antecedentes ni indicios de ideación suicida en las personas cuidadoras.',
-        'c' => 'Riesgo medio — Al menos una persona cuidadora presenta ideación suicida o ha recibido atención al respecto.',
-        'd' => 'Riesgo alto — Una persona cuidadora ha requerido internación por intento/ideación suicida grave.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a ideación suicida de personas cuidadoras.',
+        'b' => 'Riesgo nulo o bajo — Las personas cuidadoras no presentan antecedentes de ideación suicida en su biografía.',
+        'c' => 'Riesgo medio — Al menos una de las personas cuidadoras ha recibido atención psicológica/psiquiátrica por ideación suicida, o se cuenta con reportes previos que indica presencia de esta condición.',
+        'd' => 'Riesgo alto — Al menos una de las personas cuidadoras ha requerido internación en salud mental por ideación o intento de suicidio.'
     ],
+
     // 2.13. Actitudes negativas hacia la intervención
     'actitudes_negativas_intervencion' => [
-        'a' => 'No es posible determinar — Falta información acerca de las actitudes hacia la intervención.',
-        'b' => 'Riesgo nulo o bajo — No existen actitudes negativas frente a la intervención o los profesionales.',
-        'c' => 'Riesgo medio — Hay actitudes negativas ocasionales pero aún se puede trabajar con la familia.',
-        'd' => 'Riesgo alto — Actitudes de rechazo frontal que impiden la labor de intervención.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar el riesgo asociado a actitudes negativas hacia la intervención.',
+        'b' => 'Riesgo nulo o bajo — No existen actitudes negativas respecto a la intervención o los profesionales por parte de los padres o personas cuidadoras.',
+        'c' => 'Riesgo medio — Los padres o personas cuidadoras presentan ocasionalmente actitudes negativas respecto a la intervención o los profesionales, pero es posible trabajar con las personas a cargo del cuidado.',
+        'd' => 'Riesgo alto — Los padres o personas cuidadoras presentan actitudes negativas respecto a la intervención o los profesionales, lo que impide trabajar con las personas a cargo del cuidado.'
     ],
+
     // 2.14. Compromiso colaborativo (Escala de protección)
     'compromiso_colaborativo' => [
-        'a' => 'No es posible determinar — Falta información acerca del nivel de compromiso con la intervención.',
-        'b' => 'Protección nula o baja — No se establece una relación de compromiso colaborativo con profesionales.',
-        'c' => 'Protección media — La relación de compromiso colaborativo es limitada, pero con disposición a mejorar.',
-        'd' => 'Protección alta — Las personas cuidadoras colaboran de forma activa y sostienen la intervención.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de protección asociada al compromiso colaborativo hacia la intervención de parte de las personas cuidadoras.',
+        'b' => 'Protección nula o baja — Personas cuidadoras y profesionales no establecen una relación de compromiso colaborativo.',
+        'c' => 'Protección media — La relación de compromiso colaborativo entre personas cuidadoras y profesionales está posiblemente presente o lo está de manera limitada.',
+        'd' => 'Protección alta — Personas cuidadoras y profesionales establecen una relación de compromiso colaborativo que permite avanzar en la intervención.'
     ],
+
     // 2.15. Extrema minimización o negación del maltrato
     'extrema_minimizacion_negacion_maltrato' => [
-        'a' => 'No es posible determinar — Falta información para evaluar la actitud ante el maltrato.',
-        'b' => 'Riesgo nulo o bajo — Reconocimiento claro del abuso o maltrato sufrido por el NNA.',
-        'c' => 'Riesgo medio — Alguna manifestación de minimización, aunque no niegan completamente los hechos.',
-        'd' => 'Riesgo alto — Negación total o justificación del maltrato, contradictorio con los antecedentes del caso.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar el riesgo asociado a la extrema minimización o negación del maltrato.',
+        'b' => 'Riesgo nulo o bajo — Las personas cuidadoras reconocen la presencia de abuso y maltrato en el niño, niña o adolescente.',
+        'c' => 'Riesgo medio — Las personas cuidadoras presentan alguna de las manifestaciones de minimización del maltrato, que son incoherentes con los antecedentes del caso.',
+        'd' => 'Riesgo alto — Las personas cuidadoras presentan alguna de las manifestaciones de negación del maltrato, que son incoherentes con los antecedentes del caso.'
     ],
+
     // 2.16. Terapia para padres o personas cuidadoras (Escala de protección)
     'terapia_cuidadores' => [
-        'a' => 'No es posible determinar — Falta información acerca de la asistencia a terapia de las personas cuidadoras.',
-        'b' => 'Protección nula o baja — Nunca han asistido a terapia o se niegan a participar.',
-        'c' => 'Protección media — Asisten a terapia pero abandonan el proceso antes de finalizar.',
-        'd' => 'Protección alta — Participan activamente en terapia y finalizan el proceso exitosamente.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de protección asociada a la terapia de las personas cuidadoras.',
+        'b' => 'Protección nula o baja — Las personas cuidadoras nunca han asistido a terapia o se han negado a participar.',
+        'c' => 'Protección media — Las personas cuidadoras han asistido a terapia, pero han desertado del proceso.',
+        'd' => 'Protección alta — Las personas cuidadoras han asistido a terapia, y han finalizado el proceso.'
     ],
+
     // 2.17. Reunificaciones fallidas
     'reunificaciones_fallidas' => [
-        'a' => 'No es posible determinar — Falta información sobre intentos de reunificación familiar previos.',
-        'b' => 'Riesgo nulo o bajo — La reunificación fue exitosa y se ha mantenido por al menos 2 años.',
-        'c' => 'Riesgo medio — La reunificación se produjo, pero con dificultades en la inserción del NNA en su núcleo familiar.',
-        'd' => 'Riesgo alto — Al menos una reunificación fallida, generando la salida del NNA tras un intento de devolución al hogar.'
+        'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a reunificaciones fallidas.',
+        'b' => 'Riesgo nulo o bajo — La reunificación ha sido exitosa. El niño, niña o adolescente se ha mantenido con su familia nuclear por al menos 2 años.',
+        'c' => 'Riesgo medio — La reunificación se ha producido, pero se observan dificultades en la inserción del niño, niña o adolescente en ese núcleo familiar.',
+        'd' => 'Riesgo alto — Ha existido al menos una reunificación fallida, generando la salida del hogar del niño, niña o adolescente luego de un intento de devolverle a su familia.'
     ]
 ];
+
+
+
+
+
 
 // Factores con sus etiquetas y descripciones
 $factores = [
@@ -314,7 +336,7 @@ Entre los problemas de salud mental estudiados en padres o personas cuidadoras s
         'descripcion' => 'Problemas de salud mental que pueden aumentar el riesgo de una nueva victimización.'
     ],
     'consumo_problematico_cuidadores' => [
-	    'label' => '2.2. Consumo problemático de alcohol y sustancias',
+	    'label' => '2.2. Consumo problemático de alcohol y sustancias de personas cuidadoras',
 	    'info'=>'Las investigaciones señalan que la dependencia al alcohol (Cheng y Lo, 2015) y el abuso del alcohol (Choi y Kim, 2022), así como el abuso de sustancias (de Ruiter et al., 2020, Holbrook y Hudziak, 2020) por parte de personas cuidadoras, están relacionados con un mayor riesgo de nuevas victimizaciones hacia los niños, niñas y adolescentes a su cargo.
 El consumo de alcohol y drogas puede exhibir patrones distintos de una persona a otra y no todos ellos ponen en riesgo a los niños, niñas y adolescentes.
 La CIE-11 (OMS, 2019) se refiere al uso peligroso de alcohol o al uso de drogas peligrosas, lo cual incrementa considerablemente el riesgo, ya sea producto de la frecuencia del consumo, de la cantidad que se consume en cada ocasión, de comportamientos de riesgo derivados del consumo o del contexto en que se consume, así como a una combinación de estos factores.

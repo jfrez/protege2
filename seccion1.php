@@ -682,7 +682,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <div class="form-group col-md-6">
                         <label class="required">Con Quiénes Vive</label>
                         <?php
-                        $convivencia_options = ['madre', 'padre', 'otros'];
+                        $convivencia_options = ['madre', 'padre', 'abuelo/a' ,'tío/a' ,'hermano/a','residencia de protección','familia de acogida','otros'];
                         $convivencia_selected = explode(',', $_POST['convivencia'] ?? $existing_data['convivencia'] ?? '');
                         foreach ($convivencia_options as $option) {
                             $checked = in_array($option, $convivencia_selected) ? 'checked' : '';
@@ -767,14 +767,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <?php
                     $fuente_options = ['tribunales', 'oln'];
                     $fuente_selected = explode(',', $_POST['fuente'] ?? $existing_data['fuente'] ?? '');
-                    foreach ($fuente_options as $option) {
-                        $checked = in_array($option, $fuente_selected) ? 'checked' : '';
-                        echo '<div class="custom-control custom-checkbox">';
-                        echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"fuente-$option\" name=\"fuente[]\" value=\"$option\" $checked >";
-                        echo "<label class=\"custom-control-label\" for=\"fuente-$option\">" . ucfirst($option) . "</label>";
-                        echo '</div>';
-                    }
-                    ?>
+			foreach ($fuente_options as $option) {
+			    $checked = in_array($option, $fuente_selected) ? 'checked' : '';
+
+			    //------------  Etiqueta corregida -------------
+			    $label = ($option === 'oln') ? strtoupper($option) : ucfirst($option);
+			    //----------------------------------------------
+
+			    echo '<div class="custom-control custom-checkbox">';
+			    echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"fuente-$option\" name=\"fuente[]\" value=\"$option\" $checked>";
+			    echo "<label class=\"custom-control-label\" for=\"fuente-$option\">$label</label>";
+			    echo '</div>';
+			}
+			?>
                     <?php if (isset($errors['fuente'])): ?>
                         <div class="error-message">
                             <?php echo htmlspecialchars($errors['fuente']); ?>
