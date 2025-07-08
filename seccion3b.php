@@ -241,7 +241,7 @@ $escalas = [
         'd' => 'Riesgo alto — Durante el último año la familia se ha visto desafiada en su supervivencia enfrentando serios problemas financieros, de empleo o vivienda.'
     ],
 
-    // 2.8. Deficiencia en habilidades de cuidado
+    // 2.8. Deficiencia en habilidades de cuidado de personas cuidadoras
     'deficiencia_habilidades_cuidado' => [
         'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a deficiencia en habilidades de cuidado de personas cuidadoras.',
         'b' => 'Riesgo nulo o bajo — Las habilidades de cuidado de padres o personas cuidadoras resultan apropiadas para responder a las necesidades del niño, niña o adolescente, de acuerdo a su nivel de desarrollo.',
@@ -377,7 +377,7 @@ Para describir este fenómeno, se ha acuñado el término “estrés de superviv
         'descripcion' => 'Estrés derivado de condiciones socioeconómicas precarias, desempleo o vivienda inestable.'
     ],
     'deficiencia_habilidades_cuidado' => [
-	    'label' => '2.8. Deficiencia en habilidades de cuidado',
+            'label' => '2.8. Deficiencia en habilidades de cuidado de personas cuidadoras',
 	    'info'=>'A nivel del funcionamiento familiar, una de las variables que se ha relacionado con nuevas victimizaciones hacia niños, niñas y adolescentes son las habilidades de cuidado que demuestran padres y personas cuidadoras (Pierce et al., 2017).
 En esta línea, se ha investigado la falta de conocimientos sobre la crianza de los(as) hijos(as) o falta de habilidades parentales (de Ruiter et al., 2020). Asimismo, las escasas habilidades de resolución de problemas de personas cuidadoras son un predictor importante de nuevas denuncias (Kim et al., 2022).',
         'descripcion' => 'Carencias importantes en las habilidades de crianza y cuidado de las personas cuidadoras.'
