@@ -401,7 +401,7 @@ La evidencia identifica entre los niños, niñas o adolescentes en mayor riesgo 
     'ideacion_suicida_cuidadores' => [
 	    'label' => '2.12. Ideación suicida de personas cuidadoras',
 	    'info'=>'La ideación suicida constituye un preocupante factor de riesgo, que expone al niño, niña o adolescente a nuevas situaciones de victimización (de Ruiter et al., 2020), denotando alteraciones psicopatológicas en las personas cuidadoras. Esta implica pensar, considerar o planificar el suicidio y suele estar asociada a cuadros depresivos o trastornos del estado de ánimo (Meyer et al., 2010).      
-En casos extremos, la ideación suicida puede dar lugar a lo que se ha denominado como suicidio extendido (Xu, et al, 2024). En este escenario se ha descrito el homicidio-suicidio por motivación “altruista”, en que el perpetrador termina con la vida de sus allegados antes de suicidarse (Flynn et al., 2016), en particular de los niños a su cargo, pues los considera demasiado débiles para sobrevivir sin su cuidado (Xu, et al, 2024). También el homicidio puede estar motivado por un deseo de causar el máximo daño a la pareja o ex pareja, particularmente en el marco de violencia de género.',
+En casos extremos, la ideación suicida puede dar lugar a lo que se ha denominado como suicidio extendido (Xu, et al, 2024). En este escenario se ha descrito el homicidio-suicidio por motivación “altruista”, en que el perpetrador termina con la vida de sus allegados antes de suicidarse (Flynn et al., 2016), en particular de los niños a su cargo, pues los considera demasiado débiles para sobrevivir sin su cuidado (Xu, et al, 2024).',
         'descripcion' => 'Pensamientos o intentos suicidas en las personas cuidadoras.'
     ],
     'actitudes_negativas_intervencion' => [

@@ -325,7 +325,15 @@ function enlaceEdicion($dimension) {
     <hr>
 
     <!-- Sección para la predicción automática (opcional) y la valoración global -->
-    <h3>Valoración Global del Nivel de Riesgo de Revictimización</h3>
+    <h3>Evaluación global de riesgo</h3>
+    <p>
+        Considerando los factores de riesgo y protección que ha usted identificado,
+        le pedimos que pueda efectuar una valoración global sobre el nivel de riesgo
+        que este niño, niña o adolescente corre de registrar un nuevo reporte de
+        victimización a futuro. La evaluación global del riesgo es de índole
+        cualitativa, y no debe estar guiada por una simple sumatoria de los factores
+        analizados, pues su peso y configuración es única en cada caso particular.
+    </p>
     <form method="POST" action="">
         <div class="card mb-4">
             <div class="card-body">
