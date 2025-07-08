@@ -371,8 +371,8 @@ function enlaceEdicion($dimension) {
                     <?php endif; ?>
                 </div>
 
+                <!--
                 <hr>
-                <!-- (Si lo deseas, conserva la funcionalidad del modelo automático) -->
                 <div class="form-group">
                     <label>Valoración basada en el modelo (automática):</label>
                     <p id="prediccion-modelo" class="font-weight-bold text-primary"></p>
@@ -398,6 +398,7 @@ function enlaceEdicion($dimension) {
                         <p>Al integrar y analizar todas estas variables, el modelo produce una estimación informada del nivel de riesgo de recurrencia en la victimización, ayudando a orientar la toma de decisiones y la asignación de recursos de protección de forma más efectiva.</p>
                     </div>
                 </div>
+                -->
 
                 <hr>
                 <!-- Comentarios adicionales -->
