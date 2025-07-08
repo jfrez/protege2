@@ -395,7 +395,7 @@ La evidencia identifica entre los niños, niñas o adolescentes en mayor riesgo 
     ],
     'inestabilidad_cuidados' => [
 	    'label' => '2.11. Inestabilidad en los cuidados',
-	    'info'=>'La presencia de múltiples personas encargadas del cuidado de un niño, niña o adolescente puede indicar una falta de estabilidad en su entorno familiar. La presencia de múltiples personas cuidadoras puede sugerir que la atención al menor cambia con regularidad, lo que podría exponerlo a situaciones de abuso y abandono. Además, la diversidad de personas cuidadoras puede afectar la calidad de los vínculos de apego con los padres, aumentando así el riesgo de maltrato infantil (Duffy et al., 2015; Vial et al., 2021).',
+            'info'=>'La presencia de múltiples personas encargadas del cuidado de un niño, niña o adolescente puede indicar una falta de estabilidad en su entorno familiar. La presencia de múltiples personas cuidadoras puede sugerir que la atención al niño, niña o adolescente cambia con regularidad, lo que podría exponerle a situaciones de abuso y abandono. Además, la diversidad de personas cuidadoras puede afectar la calidad de los vínculos de apego con los padres, aumentando así el riesgo de maltrato infantil (Duffy et al., 2015; Vial et al., 2021).',
         'descripcion' => 'Cambios frecuentes o múltiples personas a cargo del cuidado del NNA.'
     ],
     'ideacion_suicida_cuidadores' => [
