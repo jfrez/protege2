@@ -241,7 +241,7 @@ $escalas = [
         'd' => 'Riesgo alto — Durante el último año la familia se ha visto desafiada en su supervivencia enfrentando serios problemas financieros, de empleo o vivienda.'
     ],
 
-    // 2.8. Deficiencia en habilidades de cuidado
+    // 2.8. Deficiencia en habilidades de cuidado de personas cuidadoras
     'deficiencia_habilidades_cuidado' => [
         'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a deficiencia en habilidades de cuidado de personas cuidadoras.',
         'b' => 'Riesgo nulo o bajo — Las habilidades de cuidado de padres o personas cuidadoras resultan apropiadas para responder a las necesidades del niño, niña o adolescente, de acuerdo a su nivel de desarrollo.',
@@ -377,7 +377,7 @@ Para describir este fenómeno, se ha acuñado el término “estrés de superviv
         'descripcion' => 'Estrés derivado de condiciones socioeconómicas precarias, desempleo o vivienda inestable.'
     ],
     'deficiencia_habilidades_cuidado' => [
-	    'label' => '2.8. Deficiencia en habilidades de cuidado',
+            'label' => '2.8. Deficiencia en habilidades de cuidado de personas cuidadoras',
 	    'info'=>'A nivel del funcionamiento familiar, una de las variables que se ha relacionado con nuevas victimizaciones hacia niños, niñas y adolescentes son las habilidades de cuidado que demuestran padres y personas cuidadoras (Pierce et al., 2017).
 En esta línea, se ha investigado la falta de conocimientos sobre la crianza de los(as) hijos(as) o falta de habilidades parentales (de Ruiter et al., 2020). Asimismo, las escasas habilidades de resolución de problemas de personas cuidadoras son un predictor importante de nuevas denuncias (Kim et al., 2022).',
         'descripcion' => 'Carencias importantes en las habilidades de crianza y cuidado de las personas cuidadoras.'
@@ -395,13 +395,13 @@ La evidencia identifica entre los niños, niñas o adolescentes en mayor riesgo 
     ],
     'inestabilidad_cuidados' => [
 	    'label' => '2.11. Inestabilidad en los cuidados',
-	    'info'=>'La presencia de múltiples personas encargadas del cuidado de un niño, niña o adolescente puede indicar una falta de estabilidad en su entorno familiar. La presencia de múltiples personas cuidadoras puede sugerir que la atención al menor cambia con regularidad, lo que podría exponerlo a situaciones de abuso y abandono. Además, la diversidad de personas cuidadoras puede afectar la calidad de los vínculos de apego con los padres, aumentando así el riesgo de maltrato infantil (Duffy et al., 2015; Vial et al., 2021).',
+            'info'=>'La presencia de múltiples personas encargadas del cuidado de un niño, niña o adolescente puede indicar una falta de estabilidad en su entorno familiar. La presencia de múltiples personas cuidadoras puede sugerir que la atención al niño, niña o adolescente cambia con regularidad, lo que podría exponerle a situaciones de abuso y abandono. Además, la diversidad de personas cuidadoras puede afectar la calidad de los vínculos de apego con los padres, aumentando así el riesgo de maltrato infantil (Duffy et al., 2015; Vial et al., 2021).',
         'descripcion' => 'Cambios frecuentes o múltiples personas a cargo del cuidado del NNA.'
     ],
     'ideacion_suicida_cuidadores' => [
 	    'label' => '2.12. Ideación suicida de personas cuidadoras',
 	    'info'=>'La ideación suicida constituye un preocupante factor de riesgo, que expone al niño, niña o adolescente a nuevas situaciones de victimización (de Ruiter et al., 2020), denotando alteraciones psicopatológicas en las personas cuidadoras. Esta implica pensar, considerar o planificar el suicidio y suele estar asociada a cuadros depresivos o trastornos del estado de ánimo (Meyer et al., 2010).      
-En casos extremos, la ideación suicida puede dar lugar a lo que se ha denominado como suicidio extendido (Xu, et al, 2024). En este escenario se ha descrito el homicidio-suicidio por motivación “altruista”, en que el perpetrador termina con la vida de sus allegados antes de suicidarse (Flynn et al., 2016), en particular de los niños a su cargo, pues los considera demasiado débiles para sobrevivir sin su cuidado (Xu, et al, 2024). También el homicidio puede estar motivado por un deseo de causar el máximo daño a la pareja o ex pareja, particularmente en el marco de violencia de género.',
+En casos extremos, la ideación suicida puede dar lugar a lo que se ha denominado como suicidio extendido (Xu, et al, 2024). En este escenario se ha descrito el homicidio-suicidio por motivación “altruista”, en que el perpetrador termina con la vida de sus allegados antes de suicidarse (Flynn et al., 2016), en particular de los niños a su cargo, pues los considera demasiado débiles para sobrevivir sin su cuidado (Xu, et al, 2024).',
         'descripcion' => 'Pensamientos o intentos suicidas en las personas cuidadoras.'
     ],
     'actitudes_negativas_intervencion' => [
@@ -453,7 +453,6 @@ En los casos en que ha existido separación del niño, niña o adolescente del n
            <div class="card-header d-flex justify-content-between align-items-start">
             <div>
                 <strong><?php echo $data['label']; ?></strong>
-                <p><i><?php echo $data['descripcion']; ?></i></p>
             </div>
             <button type="button" 
                     class="btn btn-info btn-sm" 
