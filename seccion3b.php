@@ -453,7 +453,6 @@ En los casos en que ha existido separación del niño, niña o adolescente del n
            <div class="card-header d-flex justify-content-between align-items-start">
             <div>
                 <strong><?php echo $data['label']; ?></strong>
-                <p><i><?php echo $data['descripcion']; ?></i></p>
             </div>
             <button type="button" 
                     class="btn btn-info btn-sm" 
