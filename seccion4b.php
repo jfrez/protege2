@@ -151,9 +151,9 @@ En contraste, las relaciones escasas o de baja calidad con el grupo constituyen 
 En Chile, los niños, niñas y adolescentes atendidos por el sistema de protección especializada presentan –en su mayoría– una historia de institucionalización e intervención de larga data por parte del Estado (SENAME, 2019). En este caso, la multiplicidad de ingresos al Servicio de Protección Especializada constituyen un proxy a los nuevos reportes de abuso o maltrato, que aumentan el riesgo de futuras victimizaciones.',
         'opciones' => [
             'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar el riesgo asociado a involucramiento previo en servicios de protección.',
-            'b' => 'Riesgo nulo o bajo — El niño, niña o adolescente no presenta historial de ingresos previos al servicio de protección especializada.',
-            'c' => 'Riesgo medio — El niño, niña o adolescente presenta 1 o 2 ingresos previos al servicio de protección especializada.',
-            'd' => 'Riesgo alto — El niño, niña o adolescente presenta historial de numerosos ingresos previos a los servicios de protección especializada (tres o más).'
+            'b' => 'Riesgo nulo o bajo — El niño, niña o adolescente no presenta historial de ingresos previos al Servicio de Protección Especializada.',
+            'c' => 'Riesgo medio — El niño, niña o adolescente presenta 1 o 2 ingresos previos al Servicio de Protección Especializada.',
+            'd' => 'Riesgo alto — El niño, niña o adolescente presenta historial de numerosos ingresos previos a los Servicios de Protección Especializada (tres o más).'
         ]
     ]
 ];
