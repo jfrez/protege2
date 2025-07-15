@@ -111,7 +111,7 @@ include_once("header.php");
                 se le pide ponderar, en base a su experiencia y conocimiento del caso, si algún elemento del perfil sociodemográfico 
                 del niño, niña o adolescente -tal como su edad, nivel socioeconómico, identidad de género, entre otros- constituye un 
                 factor adicional de riesgo o protección. Además, se le pedirá considerar si hay factores de riesgo o protección no 
-                mencionados en la guía relevante de considerar para el caso bajo análisis.
+                mencionados en la guía relevantes de considerar para el caso bajo análisis.
             </p>
         </div>
     </div>
