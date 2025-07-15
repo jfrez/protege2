@@ -73,13 +73,13 @@ $escalas = [
     'denuncias_ingresos_maltrato_previo' => [
         'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de riesgo asociado a denuncias en Tribunales de Familia o Fiscalía o ingresos al sistema de protección por maltrato previo. ',
         'b' => 'Riesgo nulo o bajo — No se registran denuncias en Tribunales de Familia o Fiscalía ni ingresos previos del niño, niña o adolescente al sistema de protección.',
-        'c' => 'Riesgo medio — Se registra alguna denuncia previa en Tribunales de Familia o Fiscalía de maltrato o algún ingreso del niño, niña o adolescente al el sistema de protección. Este ingreso o denuncia refiere a maltrato de un solo tipo y/o su severidad es moderada.',
+        'c' => 'Riesgo medio — Se registra alguna denuncia previa en Tribunales de Familia o Fiscalía de maltrato o algún ingreso del niño, niña o adolescente al sistema de protección. Este ingreso o denuncia refiere a maltrato de un solo tipo y/o su severidad es moderada.',
         'd' => 'Riesgo alto — Se registran múltiples denuncias en Tribunales de Familia o Fiscalía o ingresos previos por maltrato hacia el niño, niña o adolescente en el sistema de protección especializada. Las formas de violencia son múltiples y/o severas.'
     ],
     // 1.5. Terapia para el niño, niña o adolescente (PROTECCIÓN)
     'terapia_nna' => [
         'a' => 'No es posible determinar — Falta información, por lo cual no es posible determinar la existencia de protección asociada a la asistencia a psicoterapia por parte del niño, niña o adolescente.',
-        'b' => 'Protección nula o baja — El niño, niñas o adolescente no ha recibido tratamiento psicoterapéutico previamente.      ',
+        'b' => 'Protección nula o baja — El niño, niña o adolescente no ha recibido tratamiento psicoterapéutico previamente.      ',
         'c' => 'Protección media — El niño, niña o adolescente ha seguido un proceso psicoterapéutico durante un período, pero se ha presentado una deserción.',
         'd' => 'Protección alta — El niño, niña o adolescente ha seguido un proceso psicoterapéutico y lo ha finalizado.'
     ]
