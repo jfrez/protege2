@@ -73,9 +73,9 @@ if (isset($_POST['login'])) {
 <div class="container " style="min-width:90%; background: rgba(255,255,255,0.5);">
     <h3>¿Qué es PROTEGE?</h3>
     <p>
-        PROTEGE es una guía de juicio profesional estructurado, basado en evidencia, cuyo objetivo es la evaluación 
-        de riesgo de victimización infantil recurrente, dirigida a niños, niñas y adolescentes que se encuentran 
-        en el Servicio Nacional de Protección Especializado a la Niñez y Adolescencia. PROTEGE ha sido creado para 
+        PROTEGE es una guía de juicio profesional estructurado, basado en evidencia, cuyo objetivo es la evaluación
+        del riesgo de victimización infantil recurrente, dirigida a niños, niñas y adolescentes que se encuentran
+        en el Servicio Nacional de Protección Especializada a la Niñez y Adolescencia. PROTEGE ha sido creado para
         evaluar el riesgo de recurrencia victimal, entendida como la probabilidad de que un niño, niña o adolescente 
         que ya ha tenido un reporte por algún tipo de vulneración vuelva a tener un reporte por una nueva situación a futuro.
     </p>
@@ -84,7 +84,7 @@ if (isset($_POST['login'])) {
     <p>
         PROTEGE ha sido creado pues existe clara evidencia en la literatura de que los niños, niñas o adolescentes 
         afectados por violencia presentan alto riesgo de sufrir nuevas victimizaciones. Por lo mismo, el Servicio 
-        Nacional de Protección Especializado a la Niñez y Adolescencia enfrenta el desafío de evitar que estos hechos 
+        Nacional de Protección Especializada a la Niñez y Adolescencia enfrenta el desafío de evitar que estos hechos
         ocurran y se reiteren en el tiempo. Para esto, es necesario contar con una metodología rigurosa que permita 
         evaluar el riesgo de recurrencia victimal en niños, niñas y adolescentes que están en el Servicio. PROTEGE 
         responde al desafío de contar con una metodología de evaluación de riesgo de recurrencia victimal afianzada 
