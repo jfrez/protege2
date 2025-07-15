@@ -136,7 +136,7 @@
     <input type="checkbox" id="tribunales" name="fuente[]" value="tribunales">
     <label for="tribunales">Tribunales de Familia</label>
     <input type="checkbox" id="oln" name="fuente[]" value="oln">
-    <label for="oln">OLN</label>
+    <label for="oln">OLN (Oficinas Locales de la Niñez)</label>
 </div>
 
 <!-- Nombre y profesión de la persona evaluadora -->
