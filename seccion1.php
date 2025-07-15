@@ -713,12 +713,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="required">Tipo de Maltrato del Ingreso Actual</label>
                     <?php
                     $maltrato_options = ['fisico', 'psicologico', 'negligencia', 'abuso'];
+                    $maltrato_labels = [
+                        'fisico' => 'Maltrato físico',
+                        'psicologico' => 'Maltrato psicológico',
+                        'negligencia' => 'Negligencia',
+                        'abuso' => 'Abuso sexual'
+                    ];
                     $maltrato_selected = explode(',', $_POST['maltrato'] ?? $existing_data['maltrato'] ?? '');
                     foreach ($maltrato_options as $option) {
                         $checked = in_array($option, $maltrato_selected) ? 'checked' : '';
+                        $label = $maltrato_labels[$option] ?? ucfirst($option);
                         echo '<div class="custom-control custom-checkbox">';
                         echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"maltrato-$option\" name=\"maltrato[]\" value=\"$option\" $checked>";
-                        echo "<label class=\"custom-control-label\" for=\"maltrato-$option\">Maltrato " . ucfirst($option) . "</label>";
+                        echo "<label class=\"custom-control-label\" for=\"maltrato-$option\">$label</label>";
                         echo '</div>';
                     }
                     ?>
@@ -766,19 +773,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <label class="required">Fuente de Derivación</label>
                     <?php
                     $fuente_options = ['tribunales', 'oln'];
+                    $fuente_labels = [
+                        'tribunales' => 'Tribunales de Familia',
+                        'oln' => 'OLN (Oficinas Locales de la Niñez)'
+                    ];
                     $fuente_selected = explode(',', $_POST['fuente'] ?? $existing_data['fuente'] ?? '');
-			foreach ($fuente_options as $option) {
-			    $checked = in_array($option, $fuente_selected) ? 'checked' : '';
+                        foreach ($fuente_options as $option) {
+                            $checked = in_array($option, $fuente_selected) ? 'checked' : '';
+                            $label = $fuente_labels[$option] ?? ucfirst($option);
 
-			    //------------  Etiqueta corregida -------------
-			    $label = ($option === 'oln') ? strtoupper($option) : ucfirst($option);
-			    //----------------------------------------------
-
-			    echo '<div class="custom-control custom-checkbox">';
-			    echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"fuente-$option\" name=\"fuente[]\" value=\"$option\" $checked>";
-			    echo "<label class=\"custom-control-label\" for=\"fuente-$option\">$label</label>";
-			    echo '</div>';
-			}
+                            echo '<div class="custom-control custom-checkbox">';
+                            echo "<input type=\"checkbox\" class=\"custom-control-input\" id=\"fuente-$option\" name=\"fuente[]\" value=\"$option\" $checked>";
+                            echo "<label class=\"custom-control-label\" for=\"fuente-$option\">$label</label>";
+                            echo '</div>';
+                        }
 			?>
                     <?php if (isset($errors['fuente'])): ?>
                         <div class="error-message">
