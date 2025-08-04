@@ -1,14 +1,6 @@
 <?php
-$host = "127.0.0.1";
-$user = "root";
-$passwd = "holahola";
-$database = "fr";
+include_once("config.php");
 
-$conn = new mysqli($host, $user, $passwd, $database);
-
-if ($conn->connect_error) {
-    die('Connection failed: ' . $conn->connect_error);
-}
 $error = '';
 $generatedPassword = '';
 $email = '';
@@ -23,14 +15,19 @@ if (isset($_POST['register'])) {
     $hashedPassword = password_hash($generatedPassword, PASSWORD_BCRYPT);
 
     // Check if email already exists
-    $sql = "SELECT * FROM users WHERE email='$email'";
-    $result = $conn->query($sql);
+    $sql = "SELECT 1 FROM users WHERE email = ?";
+    $params = array($email);
+    $stmt = sqlsrv_query($conn, $sql, $params);
 
-    if ($result->num_rows > 0) {
+    if ($stmt === false) {
+        $error = 'Error checking email!';
+    } elseif (sqlsrv_fetch($stmt)) {
         $error = 'email already exists!';
     } else {
-        $sql = "INSERT INTO users (name, last_name, email, password) VALUES ('$name', '$lastname', '$email', '$hashedPassword')";
-        if ($conn->query($sql)) {
+        $sql = "INSERT INTO users (name, last_name, email, password) VALUES (?, ?, ?, ?)";
+        $params = array($name, $lastname, $email, $hashedPassword);
+        $stmt = sqlsrv_query($conn, $sql, $params);
+        if ($stmt) {
             // Use JavaScript to show credentials in a popup
             echo "<script>
                     alert('Registro exitoso!\\nEmail: $email\\nClave: $generatedPassword');
