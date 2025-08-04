@@ -16,8 +16,19 @@ if (isset($_POST['login'])) {
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
+
+            if (empty($row['token'])) {
+                $row['token'] = bin2hex(random_bytes(16));
+                $update = $conn->prepare("UPDATE users SET token=? WHERE userid=?");
+                $update->bind_param("si", $row['token'], $row['userid']);
+                $update->execute();
+                $update->close();
+            }
+
+            $_SESSION['token'] = $row['token'];
+            $_SESSION['login_method'] = 'userpass';
             header('Location: homepage.php');
-            exit(); 
+            exit();
         } else {
             $error = 'Invalid password!';
         }

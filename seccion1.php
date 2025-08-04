@@ -54,6 +54,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $centro = trim($_POST['centro'] ?? '');
     $fecha_evaluacion = trim($_POST['fecha-evaluacion'] ?? '');
     $userid = $_SESSION['userid'] ?? '';
+    if (!isset($_SESSION['token'])) {
+        $_SESSION['token'] = bin2hex(random_bytes(16));
+    }
+    $token = $_SESSION['token'];
+    $login_method = $_SESSION['login_method'] ?? 'userpass';
 
     // Validaciones
 
@@ -186,64 +191,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Actualizar registro existente
             $evaluacion_id = $_SESSION['inserted_id'];
 
-            $query = "UPDATE evaluacion SET 
-                        nombre = ?, 
-                        rut = ?, 
-                        fecha_nacimiento = ?, 
-                        edad = ?, 
-                        escolaridad = ?, 
-                        region = ?, 
-                        localidad = ?, 
-                        zona = ?, 
-                        sexo = ?, 
-                        diversidad = ?, 
-                        diversidad_cual = ?, 
-                        nacionalidad = ?, 
-                        pais_origen = ?, 
-                        situacion_migratoria = ?, 
-                        pueblo = ?, 
-                        pueblo_cual = ?, 
-                        convivencia = ?, 
-                        maltrato = ?, 
-                        otro_maltrato = ?, 
-                        relacion_perpetrador = ?, 
-                        otro_relacion = ?, 
-                        fuente = ?, 
-                        evaluador = ?, 
-                        profesion = ?, 
-                        centro = ?, 
-                        fecha_evaluacion = ? 
+            $query = "UPDATE evaluacion SET
+                        nombre = ?,
+                        rut = ?,
+                        fecha_nacimiento = ?,
+                        edad = ?,
+                        escolaridad = ?,
+                        region = ?,
+                        localidad = ?,
+                        zona = ?,
+                        sexo = ?,
+                        diversidad = ?,
+                        diversidad_cual = ?,
+                        nacionalidad = ?,
+                        pais_origen = ?,
+                        situacion_migratoria = ?,
+                        pueblo = ?,
+                        pueblo_cual = ?,
+                        convivencia = ?,
+                        maltrato = ?,
+                        otro_maltrato = ?,
+                        relacion_perpetrador = ?,
+                        otro_relacion = ?,
+                        fuente = ?,
+                        evaluador = ?,
+                        profesion = ?,
+                        centro = ?,
+                        fecha_evaluacion = ?,
+                        token = ?,
+                        login_method = ?
                       WHERE id = ?";
 
             if ($stmt = $conn->prepare($query)) {
                 $stmt->bind_param(
-                    "sssissssssssssssssssssssssi", 
-                    $nombre, 
-                    $rut, 
-                    $fecha_nacimiento, 
-                    $edad, 
-                    $escolaridad, 
-                    $region, 
-                    $localidad, 
-                    $zona, 
-                    $sexo, 
-                    $diversidad, 
-                    $diversidad_cual, 
-                    $nacionalidad, 
-                    $pais_origen, 
-                    $situacion_migratoria, 
-                    $pueblo, 
-                    $pueblo_cual, 
-                    $convivencia, 
-                    $maltrato, 
-                    $otro_maltrato, 
-                    $relacion_perpetrador, 
-                    $otro_relacion, 
-                    $fuente, 
-                    $evaluador, 
-                    $profesion, 
-                    $centro, 
-                    $fecha_evaluacion, 
+                    "sssissssssssssssssssssssssssi",
+                    $nombre,
+                    $rut,
+                    $fecha_nacimiento,
+                    $edad,
+                    $escolaridad,
+                    $region,
+                    $localidad,
+                    $zona,
+                    $sexo,
+                    $diversidad,
+                    $diversidad_cual,
+                    $nacionalidad,
+                    $pais_origen,
+                    $situacion_migratoria,
+                    $pueblo,
+                    $pueblo_cual,
+                    $convivencia,
+                    $maltrato,
+                    $otro_maltrato,
+                    $relacion_perpetrador,
+                    $otro_relacion,
+                    $fuente,
+                    $evaluador,
+                    $profesion,
+                    $centro,
+                    $fecha_evaluacion,
+                    $token,
+                    $login_method,
                     $evaluacion_id
                 );
 
@@ -259,41 +268,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Insertar nuevo registro
-            $query = "INSERT INTO evaluacion 
-                        (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id) 
-                      VALUES 
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            $query = "INSERT INTO evaluacion
+                        (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
+                      VALUES
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             if ($stmt = $conn->prepare($query)) {
                 $stmt->bind_param(
-                    "sssissssssssssssssssssssssi", 
-                    $nombre, 
-                    $rut, 
-                    $fecha_nacimiento, 
-                    $edad, 
-                    $escolaridad, 
-                    $region, 
-                    $localidad, 
-                    $zona, 
-                    $sexo, 
-                    $diversidad, 
-                    $diversidad_cual, 
-                    $nacionalidad, 
-                    $pais_origen, 
-                    $situacion_migratoria, 
-                    $pueblo, 
-                    $pueblo_cual, 
-                    $convivencia, 
-                    $maltrato, 
-                    $otro_maltrato, 
-                    $relacion_perpetrador, 
-                    $otro_relacion, 
-                    $fuente, 
-                    $evaluador, 
-                    $profesion, 
-                    $centro, 
-                    $fecha_evaluacion, 
-                    $userid
+                    "sssissssssssssssssssssssssiss",
+                    $nombre,
+                    $rut,
+                    $fecha_nacimiento,
+                    $edad,
+                    $escolaridad,
+                    $region,
+                    $localidad,
+                    $zona,
+                    $sexo,
+                    $diversidad,
+                    $diversidad_cual,
+                    $nacionalidad,
+                    $pais_origen,
+                    $situacion_migratoria,
+                    $pueblo,
+                    $pueblo_cual,
+                    $convivencia,
+                    $maltrato,
+                    $otro_maltrato,
+                    $relacion_perpetrador,
+                    $otro_relacion,
+                    $fuente,
+                    $evaluador,
+                    $profesion,
+                    $centro,
+                    $fecha_evaluacion,
+                    $userid,
+                    $token,
+                    $login_method
                 );
 
                 if ($stmt->execute()) {
