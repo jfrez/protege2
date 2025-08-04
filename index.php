@@ -17,23 +17,22 @@ if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
 
-    // Evitar inyección SQL con prepared statements
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result();
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $params = array($email);
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    if ($stmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
 
-    // Verificamos si existe exactamente un usuario con ese email
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
-        // Verificamos contraseña con password_verify
+    if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
             // Login exitoso
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
+            sqlsrv_free_stmt($stmt);
             header('Location: homepage.php');
-            exit(); 
+            exit();
         } else {
             $error = 'Contraseña equivocada';
         }
@@ -41,7 +40,7 @@ if (isset($_POST['login'])) {
         $error = 'Correo inválido';
     }
 
-    $stmt->close(); // Cerramos el statement
+    sqlsrv_free_stmt($stmt);
 }
 ?>
 

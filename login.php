@@ -4,13 +4,15 @@
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
-    // Use prepared statements to prevent SQL injection
-    $stmt = $conn->prepare("SELECT * FROM users WHERE email=?");
-    $stmt->bind_param("s", $email);
-    $stmt->execute();
-    $result = $stmt->get_result(); 
-    if ($result->num_rows == 1) {
-        $row = $result->fetch_assoc();
+
+    $sql = "SELECT * FROM users WHERE email = ?";
+    $params = array($email);
+    $stmt = sqlsrv_query($conn, $sql, $params);
+    if ($stmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
+
+    if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
             $error = 'ok!!';
             $_SESSION['userid'] = $row['userid'];
@@ -19,10 +21,13 @@ if (isset($_POST['login'])) {
 
             if (empty($row['token'])) {
                 $row['token'] = bin2hex(random_bytes(16));
-                $update = $conn->prepare("UPDATE users SET token=? WHERE userid=?");
-                $update->bind_param("si", $row['token'], $row['userid']);
-                $update->execute();
-                $update->close();
+                $updateSql = "UPDATE users SET token = ? WHERE userid = ?";
+                $updateParams = array($row['token'], $row['userid']);
+                $updateStmt = sqlsrv_query($conn, $updateSql, $updateParams);
+                if ($updateStmt === false) {
+                    die(print_r(sqlsrv_errors(), true));
+                }
+                sqlsrv_free_stmt($updateStmt);
             }
 
             $_SESSION['token'] = $row['token'];
@@ -36,7 +41,7 @@ if (isset($_POST['login'])) {
         $error = 'Invalid email!';
     }
 
-    $stmt->close(); // Close the statement
+    sqlsrv_free_stmt($stmt);
 }
 ?>
 

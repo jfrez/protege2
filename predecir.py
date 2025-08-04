@@ -4,7 +4,9 @@ import joblib
 from sklearn.preprocessing import LabelEncoder
 from sqlalchemy import create_engine
 
-engine = create_engine('mysql+mysqlconnector://root:holahola@localhost/protege')
+engine = create_engine(
+    'mssql+pyodbc://sa:YourStrong!Passw0rd@db/protege?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes'
+)
 
 
 # Leer el evaluation_id desde argumentos
