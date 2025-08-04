@@ -13,6 +13,7 @@ db_name = os.getenv("DB_NAME", "protege")
 
 engine = create_engine(
     f"mssql+pyodbc://{user}:{password}@{host}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+
 )
 
 
