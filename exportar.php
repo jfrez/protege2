@@ -31,15 +31,16 @@ $query_base = "
 ";
 
 $user_id = $_SESSION['userid'];
-$stmt = $conn->prepare($query_base);
+$params = array($user_id);
+$stmt = sqlsrv_query($conn, $query_base, $params);
 if ($stmt === false) {
-    die('Error en la preparación de la consulta: ' . $conn->error);
+    die(print_r(sqlsrv_errors(), true));
 }
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$data = $result->fetch_all(MYSQLI_ASSOC);
-$stmt->close();
+$data = [];
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    $data[] = $row;
+}
+sqlsrv_free_stmt($stmt);
 
 // Modificar datos según el tipo de exportación
 if ($tipo === 'anonimizado') {

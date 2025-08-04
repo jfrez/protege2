@@ -1,10 +1,19 @@
 import sys
+import os
 import pandas as pd
 import joblib
 from sklearn.preprocessing import LabelEncoder
 from sqlalchemy import create_engine
 
-engine = create_engine('mysql+mysqlconnector://root:holahola@localhost/protege')
+# Build connection string from environment variables
+user = os.getenv("DB_USER", "sa")
+password = os.getenv("DB_PASSWORD", "YourStrong@Passw0rd")
+host = os.getenv("DB_HOST", "db")
+db_name = os.getenv("DB_NAME", "protege")
+
+engine = create_engine(
+    f"mssql+pyodbc://{user}:{password}@{host}/{db_name}?driver=ODBC+Driver+18+for+SQL+Server&TrustServerCertificate=yes"
+)
 
 
 # Leer el evaluation_id desde argumentos

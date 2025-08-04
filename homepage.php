@@ -18,17 +18,16 @@ $query = "
     JOIN users u ON e.user_id = u.userid
     WHERE e.user_id = ?
 ";
-$stmt = $conn->prepare($query);
+$params = array($user_id);
+$stmt = sqlsrv_query($conn, $query, $params);
 if ($stmt === false) {
-    die('Error en la preparación de la consulta: ' . $conn->error);
+    die(print_r(sqlsrv_errors(), true));
 }
-$stmt->bind_param("i", $user_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$evaluaciones = $result->fetch_all(MYSQLI_ASSOC);
-//$evaluaciones = array_slice($evaluaciones_completas, 0, 20);
-
-$stmt->close();
+$evaluaciones = [];
+while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    $evaluaciones[] = $row;
+}
+sqlsrv_free_stmt($stmt);
 ?>
 
 <!-- Main Content -->
