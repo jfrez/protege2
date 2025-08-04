@@ -15,3 +15,10 @@ Las credenciales por defecto de la base de datos son:
 - Usuario: `sa`
 - Contraseña: `YourStrong@Passw0rd`
 - Base de datos: `protege`
+
+Para ejecutar el script de predicción dentro del contenedor web:
+
+```
+docker-compose exec web python predecir.py <evaluation_id>
+```
+
