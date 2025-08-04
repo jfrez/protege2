@@ -4,17 +4,7 @@ ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
 session_start(); // Start the session
-
-$host = "127.0.0.1";
-$user = "user";
-$passwd = "password";
-$database = "fr";
-
-$conn = new mysqli($host, $user, $passwd, $database);
-
-if ($conn->connect_error) {
-    die('Connection failed: ' . $conn->connect_error);
-}
+include_once("config.php");
 
 $error = '';
 header('Content-Type: application/json');
@@ -34,16 +24,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $predictionValue = $data['predictionValue'];
 
     // save child
-    $sql = "INSERT INTO people (name, address, age, last_name, last_name2, middle_name, rut) 
-            VALUES ('$name', '$address', '$age', '$lastName1', '$lastName2', '$middleName', '$rut')";
+    $sql = "INSERT INTO people (name, address, age, last_name, last_name2, middle_name, rut)
+            VALUES (?, ?, ?, ?, ?, ?, ?)";
+    $params = array($name, $address, $age, $lastName1, $lastName2, $middleName, $rut);
+    $stmt = sqlsrv_query($conn, $sql, $params);
 
-    if ($conn->query($sql)) {
-        $personId = $conn->insert_id;
+    if ($stmt) {
+        $res = sqlsrv_query($conn, "SELECT SCOPE_IDENTITY() AS id");
+        $row = sqlsrv_fetch_array($res, SQLSRV_FETCH_ASSOC);
+        $personId = $row['id'];
         // save form
-        $sql2 = "INSERT INTO assessments (input, result, personid, userid) 
-                 VALUES ('" . json_encode($riesgo) . "', '$predictionValue', '$personId', '$userid')";
+        $sql2 = "INSERT INTO assessments (input, result, personid, userid)
+                 VALUES (?, ?, ?, ?)";
+        $params2 = array(json_encode($riesgo), $predictionValue, $personId, $userid);
+        $stmt2 = sqlsrv_query($conn, $sql2, $params2);
 
-        if ($conn->query($sql2)) {
+        if ($stmt2) {
             echo json_encode(['status' => 'success', 'personId' => $personId]);
         } else {
             echo json_encode(['status' => 'error', 'message' => 'Error saving assessment.']);
@@ -53,9 +49,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['status' => 'error', 'message' => 'Error saving person.']);
         exit;
     }
-    // Close the database connection
-    $conn->close();
-    echo json_encode(['status' => 'success', 'personId' => $personId]);
+    sqlsrv_close($conn);
 } else {
     echo json_encode(['status' => 'error', 'message' => 'Invalid request method.']);
 }
