@@ -10,12 +10,12 @@ services:
       - "1433:1433"
     volumes:
       - ./db-init:/docker-entrypoint-initdb.d
-    command: /opt/mssql/bin/sqlservr
+    command: ["/bin/bash", "/docker-entrypoint-initdb.d/entrypoint.sh"]
 
   web:
     build: .
     ports:
-      - "8080:8080"
+      - "8080:80"
     volumes:
       - .:/var/www/html
     depends_on:
