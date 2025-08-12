@@ -32,6 +32,7 @@ BEGIN
     VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin');
 END
 
+
 IF OBJECT_ID(N'people', N'U') IS NULL
 BEGIN
     CREATE TABLE people (
