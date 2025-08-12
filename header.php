@@ -48,6 +48,9 @@ if (isset($_SESSION['userid'])) {
         <span class="navbar-text mr-2" style="white-space: nowrap;">
             <?php echo htmlspecialchars($_SESSION['name']); ?>
         </span>
+        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+            <a class="nav-link" href="user_management.php" style="color: var(--udp-white);">Gestión Usuarios</a>
+        <?php endif; ?>
         <a href="logout.php" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
     </div>
 </nav>
