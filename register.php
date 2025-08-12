@@ -24,7 +24,7 @@ if (isset($_POST['register'])) {
     } elseif (sqlsrv_fetch($stmt)) {
         $error = 'email already exists!';
     } else {
-        $sql = "INSERT INTO users (name, last_name, email, password) VALUES (?, ?, ?, ?)";
+        $sql = "INSERT INTO users (name, last_name, email, password, role) VALUES (?, ?, ?, ?, 'user')";
         $params = array($name, $lastname, $email, $hashedPassword);
         $stmt = sqlsrv_query($conn, $sql, $params);
         if ($stmt) {
