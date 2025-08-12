@@ -12,6 +12,7 @@ services:
       - ./db-init:/docker-entrypoint-initdb.d
     entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/entrypoint.sh"]
 
+
   web:
     build: .
     ports:
