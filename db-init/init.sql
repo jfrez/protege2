@@ -19,6 +19,20 @@ BEGIN
     );
 END
 
+-- Ensure role column exists for admin/user distinction
+IF COL_LENGTH('users', 'role') IS NULL
+BEGIN
+    ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user';
+END
+
+-- Create default admin account if not present
+IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com')
+BEGIN
+    INSERT INTO users (name, last_name, email, password, role)
+    VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin');
+END
+
+
 IF OBJECT_ID(N'people', N'U') IS NULL
 BEGIN
     CREATE TABLE people (
