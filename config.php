@@ -10,7 +10,9 @@ $connectionOptions = [
     "Database" => getenv('DB_NAME') ?: 'protege',
     "Uid" => getenv('DB_USER') ?: 'sa',
     "PWD" => getenv('DB_PASSWORD') ?: 'YourStrong@Passw0rd',
-    "CharacterSet" => 'UTF-8'
+    "CharacterSet" => 'UTF-8',
+    "Encrypt" => 1,
+    "TrustServerCertificate" => 1
 ];
 
 $conn = sqlsrv_connect($serverName, $connectionOptions);
