@@ -10,7 +10,8 @@ services:
       - "1433:1433"
     volumes:
       - ./db-init:/docker-entrypoint-initdb.d
-    command: ["/bin/bash", "/docker-entrypoint-initdb.d/entrypoint.sh"]
+    entrypoint: ["/bin/bash", "/docker-entrypoint-initdb.d/entrypoint.sh"]
+
 
   web:
     build: .

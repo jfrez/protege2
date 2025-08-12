@@ -15,7 +15,15 @@ $connectionOptions = [
     "TrustServerCertificate" => 1
 ];
 
-$conn = sqlsrv_connect($serverName, $connectionOptions);
+$maxRetries = 5;
+$conn = false;
+for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
+    $conn = sqlsrv_connect($serverName, $connectionOptions);
+    if ($conn !== false) {
+        break;
+    }
+    sleep(2);
+}
 if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
