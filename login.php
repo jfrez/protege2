@@ -18,6 +18,7 @@ if (isset($_POST['login'])) {
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
+            $_SESSION['role'] = $row['role'];
 
             if (empty($row['token'])) {
                 $row['token'] = bin2hex(random_bytes(16));
