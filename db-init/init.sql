@@ -58,3 +58,44 @@ BEGIN
       FOREIGN KEY (userid) REFERENCES users(userid)
     );
 END
+
+IF OBJECT_ID(N'evaluacion', N'U') IS NULL
+BEGIN
+    CREATE TABLE evaluacion (
+      id INT IDENTITY PRIMARY KEY,
+      nombre NVARCHAR(255),
+      rut NVARCHAR(50),
+      fecha_nacimiento DATE,
+      edad INT,
+      escolaridad NVARCHAR(255),
+      region NVARCHAR(255),
+      localidad NVARCHAR(255),
+      zona NVARCHAR(255),
+      sexo NVARCHAR(50),
+      diversidad NVARCHAR(50),
+      diversidad_cual NVARCHAR(255),
+      nacionalidad NVARCHAR(255),
+      pais_origen NVARCHAR(255),
+      situacion_migratoria NVARCHAR(255),
+      pueblo NVARCHAR(255),
+      pueblo_cual NVARCHAR(255),
+      convivencia NVARCHAR(255),
+      maltrato NVARCHAR(255),
+      otro_maltrato NVARCHAR(255),
+      relacion_perpetrador NVARCHAR(255),
+      otro_relacion NVARCHAR(255),
+      fuente NVARCHAR(255),
+      evaluador NVARCHAR(255),
+      profesion NVARCHAR(255),
+      centro NVARCHAR(255),
+      fecha_evaluacion DATE,
+      user_id INT,
+      token NVARCHAR(64),
+      login_method NVARCHAR(20),
+      valoracion_global NVARCHAR(255),
+      comentarios NVARCHAR(MAX),
+      obs_caracterizacion NVARCHAR(MAX),
+      obs_variables_extra NVARCHAR(MAX),
+      CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES users(userid)
+    );
+END
