@@ -48,7 +48,6 @@ if ($conn === false) {
 }
 
 // Ensure essential tables and data exist
-$adminPassword = password_hash('adminadmin', PASSWORD_BCRYPT);
 $schemaQueries = [
     // Create users table if it doesn't exist
     "IF OBJECT_ID(N'users', N'U') IS NULL BEGIN CREATE TABLE users (" .
@@ -61,11 +60,7 @@ $schemaQueries = [
     ); END",
 
     // Ensure role column is available
-    "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END",
-
-    // Seed default admin user
-    "IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com') BEGIN " .
-        "INSERT INTO users (name, last_name, email, password, role) VALUES ('Admin', 'User', 'admin@example.com', '" . $adminPassword . "', 'admin'); END"
+    "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END"
 ];
 
 foreach ($schemaQueries as $query) {
@@ -75,6 +70,29 @@ foreach ($schemaQueries as $query) {
     }
     sqlsrv_free_stmt($stmt);
 }
+
+$adminEmail = 'admin@example.com';
+$adminPassword = password_hash('adminadmin', PASSWORD_BCRYPT);
+
+$checkStmt = sqlsrv_query($conn, "SELECT userid FROM users WHERE email = ?", [$adminEmail]);
+if ($checkStmt === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
+
+if ($row = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC)) {
+    $updateStmt = sqlsrv_query($conn, "UPDATE users SET password = ?, role = 'admin' WHERE userid = ?", [$adminPassword, $row['userid']]);
+    if ($updateStmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
+    sqlsrv_free_stmt($updateStmt);
+} else {
+    $insertStmt = sqlsrv_query($conn, "INSERT INTO users (name, last_name, email, password, role) VALUES (?, ?, ?, ?, 'admin')", ['Admin', 'User', $adminEmail, $adminPassword]);
+    if ($insertStmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
+    sqlsrv_free_stmt($insertStmt);
+}
+sqlsrv_free_stmt($checkStmt);
 
 $error = '';
 if (isset($_SESSION['email'])) {
