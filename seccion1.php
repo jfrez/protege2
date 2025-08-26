@@ -268,6 +268,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             ];
             $stmt = sqlsrv_query($conn, $query, $params);
             if ($stmt !== false) {
+                // Ensure the evaluation id remains in session for subsequent sections
+                $_SESSION['inserted_id'] = $evaluacion_id;
                 sqlsrv_free_stmt($stmt);
                 header('Location: seccion2b.php');
                 // Discard any buffered output before redirecting
@@ -280,6 +282,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Insertar nuevo registro
             $query = "INSERT INTO dbo.evaluacion
                         (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
+                        OUTPUT INSERTED.id
                       VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -315,22 +318,18 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $login_method
             ];
             $stmt = sqlsrv_query($conn, $query, $params);
-            if ($stmt !== false) {
+            if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $_SESSION['inserted_id'] = (int)$row['id'];
                 sqlsrv_free_stmt($stmt);
-                $idStmt = sqlsrv_query($conn, "SELECT SCOPE_IDENTITY() AS id");
-                if ($idStmt !== false && $row = sqlsrv_fetch_array($idStmt, SQLSRV_FETCH_ASSOC)) {
-                    $inserted_id = $row['id'];
-                    $_SESSION['inserted_id'] = $inserted_id;
-                }
-                if ($idStmt !== false) {
-                    sqlsrv_free_stmt($idStmt);
-                }
                 header('Location: seccion2b.php');
                 // Discard any buffered output before redirecting
                 ob_end_clean();
                 exit();
             } else {
                 $errors['general'] = "Error al guardar el registro: " . print_r(sqlsrv_errors(), true);
+                if ($stmt !== false) {
+                    sqlsrv_free_stmt($stmt);
+                }
             }
         }
     }
