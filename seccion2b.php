@@ -5,10 +5,29 @@ ob_start();
 include_once("config.php");
 include_once("header.php");
 
-// Verificar si hay una evaluación en curso
+// Verificar si hay una evaluación en curso o recuperar la más reciente del usuario
 if (!isset($_SESSION['inserted_id'])) {
-    echo "Error: No se ha iniciado una evaluación.";
-    exit();
+    $userid = $_SESSION['userid'] ?? null;
+    if ($userid) {
+        $stmt = sqlsrv_query(
+            $conn,
+            "SELECT TOP 1 id FROM dbo.evaluacion WHERE user_id = ? ORDER BY id DESC",
+            [$userid]
+        );
+        if ($stmt !== false && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
+            $_SESSION['inserted_id'] = $row['id'];
+            $evaluacion_id = $row['id'];
+        }
+        if ($stmt !== false) {
+            sqlsrv_free_stmt($stmt);
+        }
+    }
+    if (!isset($_SESSION['inserted_id'])) {
+        // No hay evaluación disponible; redirigir a la primera sección
+        header("Location: seccion1.php");
+        ob_end_clean();
+        exit();
+    }
 }
 
 $evaluacion_id = $_SESSION['inserted_id'];
