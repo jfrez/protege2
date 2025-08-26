@@ -1,5 +1,7 @@
 <?php
 session_start();
+// Buffer output so headers can be sent later
+ob_start();
 include_once("config.php");
 include_once("header.php");
 
@@ -13,15 +15,14 @@ if (isset($_SESSION['inserted_id']) && $_SESSION['inserted_id'] != '') {
     $evaluacion_id = $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
-    $query = "SELECT * FROM evaluacion WHERE id = ?";
-    if ($stmt = $conn->prepare($query)) {
-        $stmt->bind_param("i", $evaluacion_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 1) {
-            $existing_data = $result->fetch_assoc();
-        }
-        $stmt->close();
+    $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
+    $params = [$evaluacion_id];
+    $stmt = sqlsrv_query($conn, $query, $params);
+    if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $existing_data = $row;
+    }
+    if ($stmt !== false) {
+        sqlsrv_free_stmt($stmt);
     }
 }
 
@@ -53,7 +54,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $profesion = trim($_POST['profesion'] ?? '');
     $centro = trim($_POST['centro'] ?? '');
     $fecha_evaluacion = trim($_POST['fecha-evaluacion'] ?? '');
-    $userid = $_SESSION['userid'] ?? '';
+    $userid = isset($_SESSION['userid']) && is_numeric($_SESSION['userid'])
+        ? (int) $_SESSION['userid']
+        : null;
+
+    if ($userid !== null) {
+        $checkUser = sqlsrv_query($conn, "SELECT 1 FROM dbo.users WHERE userid = ?", [$userid]);
+        if ($checkUser === false || !sqlsrv_fetch($checkUser)) {
+            $userid = null;
+        }
+        if ($checkUser !== false) {
+            sqlsrv_free_stmt($checkUser);
+        }
+    }
     if (!isset($_SESSION['token'])) {
         $_SESSION['token'] = bin2hex(random_bytes(16));
     }
@@ -191,7 +204,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Actualizar registro existente
             $evaluacion_id = $_SESSION['inserted_id'];
 
-            $query = "UPDATE evaluacion SET
+            $query = "UPDATE dbo.evaluacion SET
                         nombre = ?,
                         rut = ?,
                         fecha_nacimiento = ?,
@@ -222,107 +235,106 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         login_method = ?
                       WHERE id = ?";
 
-            if ($stmt = $conn->prepare($query)) {
-                $stmt->bind_param(
-                    "sssissssssssssssssssssssssssi",
-                    $nombre,
-                    $rut,
-                    $fecha_nacimiento,
-                    $edad,
-                    $escolaridad,
-                    $region,
-                    $localidad,
-                    $zona,
-                    $sexo,
-                    $diversidad,
-                    $diversidad_cual,
-                    $nacionalidad,
-                    $pais_origen,
-                    $situacion_migratoria,
-                    $pueblo,
-                    $pueblo_cual,
-                    $convivencia,
-                    $maltrato,
-                    $otro_maltrato,
-                    $relacion_perpetrador,
-                    $otro_relacion,
-                    $fuente,
-                    $evaluador,
-                    $profesion,
-                    $centro,
-                    $fecha_evaluacion,
-                    $token,
-                    $login_method,
-                    $evaluacion_id
-                );
-
-                if ($stmt->execute()) {
-                    header('Location: seccion2b.php');
-                    exit();
-                } else {
-                    $errors['general'] = "Error al actualizar el registro: " . $stmt->error;
-                }
-                $stmt->close();
+            $params = [
+                $nombre,
+                $rut,
+                $fecha_nacimiento,
+                $edad,
+                $escolaridad,
+                $region,
+                $localidad,
+                $zona,
+                $sexo,
+                $diversidad,
+                $diversidad_cual,
+                $nacionalidad,
+                $pais_origen,
+                $situacion_migratoria,
+                $pueblo,
+                $pueblo_cual,
+                $convivencia,
+                $maltrato,
+                $otro_maltrato,
+                $relacion_perpetrador,
+                $otro_relacion,
+                $fuente,
+                $evaluador,
+                $profesion,
+                $centro,
+                $fecha_evaluacion,
+                $token,
+                $login_method,
+                $evaluacion_id
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
+            if ($stmt !== false) {
+                // Ensure the evaluation id remains in session for subsequent sections
+                $_SESSION['inserted_id'] = $evaluacion_id;
+                sqlsrv_free_stmt($stmt);
+                header('Location: seccion2b.php');
+                // Discard any buffered output before redirecting
+                ob_end_clean();
+                exit();
             } else {
-                $errors['general'] = "Error de preparación de la consulta: " . $conn->error;
+                $errors['general'] = "Error al actualizar el registro: " . print_r(sqlsrv_errors(), true);
             }
         } else {
             // Insertar nuevo registro
-            $query = "INSERT INTO evaluacion
+            $query = "INSERT INTO dbo.evaluacion
                         (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
+                        OUTPUT INSERTED.id
                       VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            if ($stmt = $conn->prepare($query)) {
-                $stmt->bind_param(
-                    "sssissssssssssssssssssssssiss",
-                    $nombre,
-                    $rut,
-                    $fecha_nacimiento,
-                    $edad,
-                    $escolaridad,
-                    $region,
-                    $localidad,
-                    $zona,
-                    $sexo,
-                    $diversidad,
-                    $diversidad_cual,
-                    $nacionalidad,
-                    $pais_origen,
-                    $situacion_migratoria,
-                    $pueblo,
-                    $pueblo_cual,
-                    $convivencia,
-                    $maltrato,
-                    $otro_maltrato,
-                    $relacion_perpetrador,
-                    $otro_relacion,
-                    $fuente,
-                    $evaluador,
-                    $profesion,
-                    $centro,
-                    $fecha_evaluacion,
-                    $userid,
-                    $token,
-                    $login_method
-                );
-
-                if ($stmt->execute()) {
-                    $inserted_id = $conn->insert_id;
-                    $_SESSION['inserted_id'] = $inserted_id;
-                    header('Location: seccion2b.php');
-                    exit();
-                } else {
-                    $errors['general'] = "Error al guardar el registro: " . $stmt->error;
-                }
-                $stmt->close();
+            $params = [
+                $nombre,
+                $rut,
+                $fecha_nacimiento,
+                $edad,
+                $escolaridad,
+                $region,
+                $localidad,
+                $zona,
+                $sexo,
+                $diversidad,
+                $diversidad_cual,
+                $nacionalidad,
+                $pais_origen,
+                $situacion_migratoria,
+                $pueblo,
+                $pueblo_cual,
+                $convivencia,
+                $maltrato,
+                $otro_maltrato,
+                $relacion_perpetrador,
+                $otro_relacion,
+                $fuente,
+                $evaluador,
+                $profesion,
+                $centro,
+                $fecha_evaluacion,
+                $userid,
+                $token,
+                $login_method
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
+            if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                $_SESSION['inserted_id'] = (int)$row['id'];
+                sqlsrv_free_stmt($stmt);
+                header('Location: seccion2b.php');
+                // Discard any buffered output before redirecting
+                ob_end_clean();
+                exit();
             } else {
-                $errors['general'] = "Error de preparación de la consulta: " . $conn->error;
+                $errors['general'] = "Error al guardar el registro: " . print_r(sqlsrv_errors(), true);
+                if ($stmt !== false) {
+                    sqlsrv_free_stmt($stmt);
+                }
             }
         }
     }
 
-    $conn->close();
+    sqlsrv_close($conn);
 }
 ?>
 

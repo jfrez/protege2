@@ -1,12 +1,33 @@
 <?php
 session_start();
+// Buffer output so headers can be sent after DB operations
+ob_start();
 include_once("config.php");
 include_once("header.php");
 
-// Verificar si hay una evaluación en curso
+// Verificar si hay una evaluación en curso o recuperar la más reciente del usuario
 if (!isset($_SESSION['inserted_id'])) {
-    echo "Error: No se ha iniciado una evaluación.";
-    exit();
+    $userid = $_SESSION['userid'] ?? null;
+    if ($userid) {
+        $stmt = sqlsrv_query(
+            $conn,
+            "SELECT TOP 1 id FROM dbo.evaluacion WHERE user_id = ? ORDER BY id DESC",
+            [$userid]
+        );
+        if ($stmt !== false && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
+            $_SESSION['inserted_id'] = $row['id'];
+            $evaluacion_id = $row['id'];
+        }
+        if ($stmt !== false) {
+            sqlsrv_free_stmt($stmt);
+        }
+    }
+    if (!isset($_SESSION['inserted_id'])) {
+        // No hay evaluación disponible; redirigir a la primera sección
+        header("Location: seccion1.php");
+        ob_end_clean();
+        exit();
+    }
 }
 
 $evaluacion_id = $_SESSION['inserted_id'];
@@ -28,12 +49,12 @@ $campos = [
 
 // Cargar valores existentes si ya hay datos en la base de datos
 $query = "SELECT * FROM factores_individuales WHERE evaluacion_id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $evaluacion_id);
-$stmt->execute();
-$result = $stmt->get_result();
-$existing_data = $result->fetch_assoc();
-$stmt->close();
+$stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
+$existing_data = [];
+if ($stmt !== false) {
+    $existing_data = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC) ?: [];
+    sqlsrv_free_stmt($stmt);
+}
 
 if ($existing_data) {
     foreach ($campos as $campo => $valor) {
@@ -128,12 +149,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         // Verificar si ya existe un registro
         $query_check = "SELECT id FROM factores_individuales WHERE evaluacion_id = ?";
-        $stmt_check = $conn->prepare($query_check);
-        $stmt_check->bind_param("i", $evaluacion_id);
-        $stmt_check->execute();
-        $result_check = $stmt_check->get_result();
-        $existing_data = $result_check->fetch_assoc();
-        $stmt_check->close();
+        $stmt_check = sqlsrv_query($conn, $query_check, [$evaluacion_id]);
+        $existing_data = $stmt_check !== false ? sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC) : [];
+        if ($stmt_check !== false) {
+            sqlsrv_free_stmt($stmt_check);
+        }
 
         if ($existing_data) {
             // Actualizar registro existente
@@ -144,16 +164,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 denuncias_ingresos_maltrato_previo = ?,
                 terapia_nna = ?
                 WHERE evaluacion_id = ?";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param(
-                "sssssi",
+            $params = [
                 $campos['enfermedades_cronicas_discapacidad'],
                 $campos['alteraciones_graves_comportamiento'],
                 $campos['desvinculacion_ausentismo_escolar'],
                 $campos['denuncias_ingresos_maltrato_previo'],
                 $campos['terapia_nna'],
                 $evaluacion_id
-            );
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
         } else {
             // Insertar un nuevo registro
             $query = "INSERT INTO factores_individuales (
@@ -164,29 +183,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 denuncias_ingresos_maltrato_previo,
                 terapia_nna
             ) VALUES (?, ?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param(
-                "isssss",
+            $params = [
                 $evaluacion_id,
                 $campos['enfermedades_cronicas_discapacidad'],
                 $campos['alteraciones_graves_comportamiento'],
                 $campos['desvinculacion_ausentismo_escolar'],
                 $campos['denuncias_ingresos_maltrato_previo'],
                 $campos['terapia_nna']
-            );
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
         }
 
-        if ($stmt->execute()) {
+        if ($stmt !== false) {
+            sqlsrv_free_stmt($stmt);
             // Redirigir a la siguiente sección
             header("Location: seccion3b.php");
+            ob_end_clean();
             exit();
         } else {
-            $errors['general'] = "Error al guardar los datos: " . $stmt->error;
+            $errors['general'] = "Error al guardar los datos: " . print_r(sqlsrv_errors(), true);
         }
-
-        $stmt->close();
     }
 }
+
+sqlsrv_close($conn);
 ?>
 
 <div class="container mt-5">
