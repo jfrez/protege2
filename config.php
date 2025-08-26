@@ -46,6 +46,34 @@ for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
 if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
+// Ensure essential tables and data exist
+$schemaQueries = [
+    // Create users table if it doesn't exist
+    "IF OBJECT_ID(N'users', N'U') IS NULL BEGIN CREATE TABLE users (" .
+        " userid INT IDENTITY PRIMARY KEY," .
+        " name NVARCHAR(100)," .
+        " last_name NVARCHAR(100)," .
+        " email NVARCHAR(255) UNIQUE NOT NULL," .
+        " password NVARCHAR(255) NOT NULL," .
+        " token NVARCHAR(64)
+    ); END",
+
+    // Ensure role column is available
+    "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END",
+
+    // Seed default admin user
+    "IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com') BEGIN " .
+        "INSERT INTO users (name, last_name, email, password, role) VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin'); END"
+];
+
+foreach ($schemaQueries as $query) {
+    $stmt = sqlsrv_query($conn, $query);
+    if ($stmt === false) {
+        die(print_r(sqlsrv_errors(), true));
+    }
+    sqlsrv_free_stmt($stmt);
+}
+
 
 $error = '';
 if (isset($_SESSION['email'])) {
