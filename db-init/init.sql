@@ -99,3 +99,17 @@ BEGIN
         CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES dbo.users(userid)
     );
 END
+
+IF OBJECT_ID(N'dbo.factores_individuales', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.factores_individuales (
+      id INT IDENTITY PRIMARY KEY,
+      evaluacion_id INT NOT NULL,
+      enfermedades_cronicas_discapacidad NVARCHAR(1),
+      alteraciones_graves_comportamiento NVARCHAR(1),
+      desvinculacion_ausentismo_escolar NVARCHAR(1),
+      denuncias_ingresos_maltrato_previo NVARCHAR(1),
+      terapia_nna NVARCHAR(1),
+      CONSTRAINT FK_factores_individuales_evaluacion FOREIGN KEY (evaluacion_id) REFERENCES dbo.evaluacion(id)
+    );
+END
