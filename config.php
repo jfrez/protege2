@@ -48,6 +48,7 @@ if ($conn === false) {
 }
 
 // Ensure essential tables and data exist
+
 $schemaQueries = [
     // Create users table if it doesn't exist
     "IF OBJECT_ID(N'users', N'U') IS NULL BEGIN CREATE TABLE users (" .
@@ -61,6 +62,7 @@ $schemaQueries = [
 
     // Ensure role column is available
     "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END"
+
 ];
 
 foreach ($schemaQueries as $query) {
@@ -93,6 +95,7 @@ if ($row = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC)) {
     sqlsrv_free_stmt($insertStmt);
 }
 sqlsrv_free_stmt($checkStmt);
+
 
 $error = '';
 if (isset($_SESSION['email'])) {
