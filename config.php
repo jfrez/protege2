@@ -46,7 +46,6 @@ for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
 if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
-
 // Ensure essential tables and data exist
 $schemaQueries = [
     // Create users table if it doesn't exist
@@ -74,6 +73,7 @@ foreach ($schemaQueries as $query) {
     }
     sqlsrv_free_stmt($stmt);
 }
+
 
 $error = '';
 if (isset($_SESSION['email'])) {
