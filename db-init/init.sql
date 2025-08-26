@@ -139,3 +139,15 @@ BEGIN
       CONSTRAINT FK_factores_familiares_evaluacion FOREIGN KEY (evaluacion_id) REFERENCES dbo.evaluacion(id)
     );
 END
+
+IF OBJECT_ID(N'dbo.factores_contextuales', N'U') IS NULL
+BEGIN
+    CREATE TABLE dbo.factores_contextuales (
+      id INT IDENTITY PRIMARY KEY,
+      evaluacion_id INT NOT NULL,
+      historia_maltrato_perpetrador NVARCHAR(1),
+      presencia_pares_confianza_nna NVARCHAR(1),
+      involucramiento_previo_servicio_proteccion NVARCHAR(1),
+      CONSTRAINT FK_factores_contextuales_evaluacion FOREIGN KEY (evaluacion_id) REFERENCES dbo.evaluacion(id)
+    );
+END
