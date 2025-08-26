@@ -1,7 +1,6 @@
 <?php 
 session_start();
 include_once("config.php");
-include_once("header.php");
 
 // Aseguramos que $error esté definido para evitar warnings
 $error = "";
@@ -42,6 +41,8 @@ if (isset($_POST['login'])) {
 
     sqlsrv_free_stmt($stmt);
 }
+
+include_once("header.php");
 ?>
 
 <link rel="stylesheet" href="index.css">
