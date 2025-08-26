@@ -13,15 +13,14 @@ if (isset($_SESSION['inserted_id']) && $_SESSION['inserted_id'] != '') {
     $evaluacion_id = $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
-    $query = "SELECT * FROM evaluacion WHERE id = ?";
-    if ($stmt = $conn->prepare($query)) {
-        $stmt->bind_param("i", $evaluacion_id);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows === 1) {
-            $existing_data = $result->fetch_assoc();
-        }
-        $stmt->close();
+    $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
+    $params = [$evaluacion_id];
+    $stmt = sqlsrv_query($conn, $query, $params);
+    if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        $existing_data = $row;
+    }
+    if ($stmt !== false) {
+        sqlsrv_free_stmt($stmt);
     }
 }
 
@@ -191,7 +190,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Actualizar registro existente
             $evaluacion_id = $_SESSION['inserted_id'];
 
-            $query = "UPDATE evaluacion SET
+            $query = "UPDATE dbo.evaluacion SET
                         nombre = ?,
                         rut = ?,
                         fecha_nacimiento = ?,
@@ -222,107 +221,103 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         login_method = ?
                       WHERE id = ?";
 
-            if ($stmt = $conn->prepare($query)) {
-                $stmt->bind_param(
-                    "sssissssssssssssssssssssssssi",
-                    $nombre,
-                    $rut,
-                    $fecha_nacimiento,
-                    $edad,
-                    $escolaridad,
-                    $region,
-                    $localidad,
-                    $zona,
-                    $sexo,
-                    $diversidad,
-                    $diversidad_cual,
-                    $nacionalidad,
-                    $pais_origen,
-                    $situacion_migratoria,
-                    $pueblo,
-                    $pueblo_cual,
-                    $convivencia,
-                    $maltrato,
-                    $otro_maltrato,
-                    $relacion_perpetrador,
-                    $otro_relacion,
-                    $fuente,
-                    $evaluador,
-                    $profesion,
-                    $centro,
-                    $fecha_evaluacion,
-                    $token,
-                    $login_method,
-                    $evaluacion_id
-                );
-
-                if ($stmt->execute()) {
-                    header('Location: seccion2b.php');
-                    exit();
-                } else {
-                    $errors['general'] = "Error al actualizar el registro: " . $stmt->error;
-                }
-                $stmt->close();
+            $params = [
+                $nombre,
+                $rut,
+                $fecha_nacimiento,
+                $edad,
+                $escolaridad,
+                $region,
+                $localidad,
+                $zona,
+                $sexo,
+                $diversidad,
+                $diversidad_cual,
+                $nacionalidad,
+                $pais_origen,
+                $situacion_migratoria,
+                $pueblo,
+                $pueblo_cual,
+                $convivencia,
+                $maltrato,
+                $otro_maltrato,
+                $relacion_perpetrador,
+                $otro_relacion,
+                $fuente,
+                $evaluador,
+                $profesion,
+                $centro,
+                $fecha_evaluacion,
+                $token,
+                $login_method,
+                $evaluacion_id
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
+            if ($stmt !== false) {
+                sqlsrv_free_stmt($stmt);
+                header('Location: seccion2b.php');
+                exit();
             } else {
-                $errors['general'] = "Error de preparación de la consulta: " . $conn->error;
+                $errors['general'] = "Error al actualizar el registro: " . print_r(sqlsrv_errors(), true);
             }
         } else {
             // Insertar nuevo registro
-            $query = "INSERT INTO evaluacion
+            $query = "INSERT INTO dbo.evaluacion
                         (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
                       VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-            if ($stmt = $conn->prepare($query)) {
-                $stmt->bind_param(
-                    "sssissssssssssssssssssssssiss",
-                    $nombre,
-                    $rut,
-                    $fecha_nacimiento,
-                    $edad,
-                    $escolaridad,
-                    $region,
-                    $localidad,
-                    $zona,
-                    $sexo,
-                    $diversidad,
-                    $diversidad_cual,
-                    $nacionalidad,
-                    $pais_origen,
-                    $situacion_migratoria,
-                    $pueblo,
-                    $pueblo_cual,
-                    $convivencia,
-                    $maltrato,
-                    $otro_maltrato,
-                    $relacion_perpetrador,
-                    $otro_relacion,
-                    $fuente,
-                    $evaluador,
-                    $profesion,
-                    $centro,
-                    $fecha_evaluacion,
-                    $userid,
-                    $token,
-                    $login_method
-                );
-
-                if ($stmt->execute()) {
-                    $inserted_id = $conn->insert_id;
+            $params = [
+                $nombre,
+                $rut,
+                $fecha_nacimiento,
+                $edad,
+                $escolaridad,
+                $region,
+                $localidad,
+                $zona,
+                $sexo,
+                $diversidad,
+                $diversidad_cual,
+                $nacionalidad,
+                $pais_origen,
+                $situacion_migratoria,
+                $pueblo,
+                $pueblo_cual,
+                $convivencia,
+                $maltrato,
+                $otro_maltrato,
+                $relacion_perpetrador,
+                $otro_relacion,
+                $fuente,
+                $evaluador,
+                $profesion,
+                $centro,
+                $fecha_evaluacion,
+                $userid,
+                $token,
+                $login_method
+            ];
+            $stmt = sqlsrv_query($conn, $query, $params);
+            if ($stmt !== false) {
+                sqlsrv_free_stmt($stmt);
+                $idStmt = sqlsrv_query($conn, "SELECT SCOPE_IDENTITY() AS id");
+                if ($idStmt !== false && $row = sqlsrv_fetch_array($idStmt, SQLSRV_FETCH_ASSOC)) {
+                    $inserted_id = $row['id'];
                     $_SESSION['inserted_id'] = $inserted_id;
-                    header('Location: seccion2b.php');
-                    exit();
-                } else {
-                    $errors['general'] = "Error al guardar el registro: " . $stmt->error;
                 }
-                $stmt->close();
+                if ($idStmt !== false) {
+                    sqlsrv_free_stmt($idStmt);
+                }
+                header('Location: seccion2b.php');
+                exit();
             } else {
-                $errors['general'] = "Error de preparación de la consulta: " . $conn->error;
+                $errors['general'] = "Error al guardar el registro: " . print_r(sqlsrv_errors(), true);
             }
         }
     }
 
-    $conn->close();
+    sqlsrv_close($conn);
 }
 ?>
 
