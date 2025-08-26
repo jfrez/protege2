@@ -46,8 +46,6 @@ for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
 if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
-
-// Ensure essential tables and data exist
 $schemaQueries = [
     // Create users table if it doesn't exist
     "IF OBJECT_ID(N'users', N'U') IS NULL BEGIN CREATE TABLE users (" .
