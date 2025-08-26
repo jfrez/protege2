@@ -1,5 +1,7 @@
 <?php
 session_start();
+// Buffer output so headers can be sent later
+ob_start();
 include_once("config.php");
 include_once("header.php");
 
@@ -52,7 +54,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $profesion = trim($_POST['profesion'] ?? '');
     $centro = trim($_POST['centro'] ?? '');
     $fecha_evaluacion = trim($_POST['fecha-evaluacion'] ?? '');
-    $userid = $_SESSION['userid'] ?? '';
+    $userid = isset($_SESSION['userid']) && is_numeric($_SESSION['userid'])
+        ? (int) $_SESSION['userid']
+        : null;
+
+    if ($userid !== null) {
+        $checkUser = sqlsrv_query($conn, "SELECT 1 FROM dbo.users WHERE userid = ?", [$userid]);
+        if ($checkUser === false || !sqlsrv_fetch($checkUser)) {
+            $userid = null;
+        }
+        if ($checkUser !== false) {
+            sqlsrv_free_stmt($checkUser);
+        }
+    }
     if (!isset($_SESSION['token'])) {
         $_SESSION['token'] = bin2hex(random_bytes(16));
     }
@@ -256,6 +270,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             if ($stmt !== false) {
                 sqlsrv_free_stmt($stmt);
                 header('Location: seccion2b.php');
+                // Discard any buffered output before redirecting
+                ob_end_clean();
                 exit();
             } else {
                 $errors['general'] = "Error al actualizar el registro: " . print_r(sqlsrv_errors(), true);
@@ -310,6 +326,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     sqlsrv_free_stmt($idStmt);
                 }
                 header('Location: seccion2b.php');
+                // Discard any buffered output before redirecting
+                ob_end_clean();
                 exit();
             } else {
                 $errors['general'] = "Error al guardar el registro: " . print_r(sqlsrv_errors(), true);
