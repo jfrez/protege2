@@ -110,6 +110,30 @@ $schemaQueries = [
         " denuncias_ingresos_maltrato_previo NVARCHAR(1)," .
         " terapia_nna NVARCHAR(1)," .
         " CONSTRAINT FK_factores_individuales_evaluacion FOREIGN KEY (evaluacion_id) REFERENCES dbo.evaluacion(id)" .
+    "); END",
+
+    // Create factores_familiares table if it doesn't exist
+    "IF OBJECT_ID(N'dbo.factores_familiares', N'U') IS NULL BEGIN CREATE TABLE dbo.factores_familiares (" .
+        " id INT IDENTITY PRIMARY KEY," .
+        " evaluacion_id INT NOT NULL," .
+        " problemas_salud_mental_cuidadores NVARCHAR(1)," .
+        " consumo_problematico_cuidadores NVARCHAR(1)," .
+        " violencia_pareja NVARCHAR(1)," .
+        " historia_maltrato_cuidadores NVARCHAR(1)," .
+        " antecedentes_penales_cuidadores NVARCHAR(1)," .
+        " dificultades_soporte_social NVARCHAR(1)," .
+        " estres_supervivencia NVARCHAR(1)," .
+        " deficiencia_habilidades_cuidado NVARCHAR(1)," .
+        " actitudes_negativas_nna NVARCHAR(1)," .
+        " atencion_prenatal_retrasada_ausente NVARCHAR(1)," .
+        " inestabilidad_cuidados NVARCHAR(1)," .
+        " ideacion_suicida_cuidadores NVARCHAR(1)," .
+        " actitudes_negativas_intervencion NVARCHAR(1)," .
+        " compromiso_colaborativo NVARCHAR(1)," .
+        " extrema_minimizacion_negacion_maltrato NVARCHAR(1)," .
+        " terapia_cuidadores NVARCHAR(1)," .
+        " reunificaciones_fallidas NVARCHAR(1)," .
+        " CONSTRAINT FK_factores_familiares_evaluacion FOREIGN KEY (evaluacion_id) REFERENCES dbo.evaluacion(id)" .
     "); END"
 ];
 
