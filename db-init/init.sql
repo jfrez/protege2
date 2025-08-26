@@ -59,9 +59,9 @@ BEGIN
     );
 END
 
-IF OBJECT_ID(N'evaluacion', N'U') IS NULL
+IF OBJECT_ID(N'dbo.evaluacion', N'U') IS NULL
 BEGIN
-    CREATE TABLE evaluacion (
+    CREATE TABLE dbo.evaluacion (
       id INT IDENTITY PRIMARY KEY,
       nombre NVARCHAR(255),
       rut NVARCHAR(50),
@@ -96,6 +96,6 @@ BEGIN
       comentarios NVARCHAR(MAX),
       obs_caracterizacion NVARCHAR(MAX),
       obs_variables_extra NVARCHAR(MAX),
-      CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES users(userid)
+        CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES dbo.users(userid)
     );
 END

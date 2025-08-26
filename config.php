@@ -61,7 +61,9 @@ $schemaQueries = [
     "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END",
 
     // Create evaluacion table if it doesn't exist
-    "IF OBJECT_ID(N'evaluacion', N'U') IS NULL BEGIN CREATE TABLE evaluacion (" .
+    // Ensure evaluacion table exists under dbo schema
+    "IF OBJECT_ID(N'dbo.evaluacion', N'U') IS NULL BEGIN CREATE TABLE dbo.evaluacion (" .
+
         " id INT IDENTITY PRIMARY KEY," .
         " nombre NVARCHAR(255)," .
         " rut NVARCHAR(50)," .
@@ -96,7 +98,7 @@ $schemaQueries = [
         " comentarios NVARCHAR(MAX)," .
         " obs_caracterizacion NVARCHAR(MAX)," .
         " obs_variables_extra NVARCHAR(MAX)," .
-        " CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES users(userid)" .
+        " CONSTRAINT FK_evaluacion_users FOREIGN KEY (user_id) REFERENCES dbo.users(userid)" .
     "); END"
 ];
 

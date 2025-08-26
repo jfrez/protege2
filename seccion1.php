@@ -13,7 +13,7 @@ if (isset($_SESSION['inserted_id']) && $_SESSION['inserted_id'] != '') {
     $evaluacion_id = $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
-    $query = "SELECT * FROM evaluacion WHERE id = ?";
+    $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
     $params = [$evaluacion_id];
     $stmt = sqlsrv_query($conn, $query, $params);
     if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
@@ -190,7 +190,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             // Actualizar registro existente
             $evaluacion_id = $_SESSION['inserted_id'];
 
-            $query = "UPDATE evaluacion SET
+            $query = "UPDATE dbo.evaluacion SET
                         nombre = ?,
                         rut = ?,
                         fecha_nacimiento = ?,
@@ -262,7 +262,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
         } else {
             // Insertar nuevo registro
-            $query = "INSERT INTO evaluacion
+            $query = "INSERT INTO dbo.evaluacion
                         (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
                       VALUES
                         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
