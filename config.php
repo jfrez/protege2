@@ -63,6 +63,7 @@ $schemaQueries = [
     // Create evaluacion table if it doesn't exist
     // Ensure evaluacion table exists under dbo schema
     "IF OBJECT_ID(N'dbo.evaluacion', N'U') IS NULL BEGIN CREATE TABLE dbo.evaluacion (" .
+
         " id INT IDENTITY PRIMARY KEY," .
         " nombre NVARCHAR(255)," .
         " rut NVARCHAR(50)," .
