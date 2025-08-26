@@ -46,7 +46,9 @@ for ($attempt = 0; $attempt < $maxRetries; $attempt++) {
 if ($conn === false) {
     die(print_r(sqlsrv_errors(), true));
 }
+
 // Ensure essential tables and data exist
+$adminPassword = password_hash('adminadmin', PASSWORD_BCRYPT);
 $schemaQueries = [
     // Create users table if it doesn't exist
     "IF OBJECT_ID(N'users', N'U') IS NULL BEGIN CREATE TABLE users (" .
@@ -63,7 +65,7 @@ $schemaQueries = [
 
     // Seed default admin user
     "IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com') BEGIN " .
-        "INSERT INTO users (name, last_name, email, password, role) VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin'); END"
+        "INSERT INTO users (name, last_name, email, password, role) VALUES ('Admin', 'User', 'admin@example.com', '" . $adminPassword . "', 'admin'); END"
 ];
 
 foreach ($schemaQueries as $query) {
@@ -73,7 +75,6 @@ foreach ($schemaQueries as $query) {
     }
     sqlsrv_free_stmt($stmt);
 }
-
 
 $error = '';
 if (isset($_SESSION['email'])) {
