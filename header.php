@@ -50,6 +50,7 @@ if (isset($_SESSION['userid'])) {
         </span>
         <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <a class="nav-link" href="user_management.php" style="color: var(--udp-white);">Gestión Usuarios</a>
+            <a class="nav-link" href="evaluation_report.php" style="color: var(--udp-white);">Reporte Evaluaciones</a>
         <?php endif; ?>
         <a href="logout.php" class="btn btn-outline-light btn-sm">Cerrar Sesión</a>
     </div>
