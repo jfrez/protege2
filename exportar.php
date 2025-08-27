@@ -75,6 +75,11 @@ if (!empty($data)) {
 
 // Agregar datos al CSV
 foreach ($data as $row) {
+    foreach ($row as $key => $value) {
+        if ($value instanceof DateTime) {
+            $row[$key] = $value->format('Y-m-d H:i:s');
+        }
+    }
     fputcsv($output, $row);
 }
 
