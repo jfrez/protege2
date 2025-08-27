@@ -1,5 +1,7 @@
 <?php
 session_start();
+// Buffer output so redirects can send headers safely
+ob_start();
 include_once("config.php");
 include_once("header.php");
 
@@ -38,6 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $errors['general'] = 'Error al guardar los datos: ' . print_r(sqlsrv_errors(), true);
         } else {
             sqlsrv_free_stmt($stmt);
+            // Clean any previous output before redirecting
+            ob_end_clean();
             header("Location: homepage.php");
             exit();
         }

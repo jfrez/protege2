@@ -52,7 +52,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Si no hay errores, insertar o actualizar los datos en la base de datos
     if (empty($errors)) {
         // Verificar si ya existe un registro en factores_contextuales para esta evaluación
-        $query_check = "SELECT id FROM factores_contextuales WHERE evaluacion_id = ?";
+        $query_check = "SELECT id FROM dbo.factores_contextuales WHERE evaluacion_id = ?";
         $stmt_check = sqlsrv_query($conn, $query_check, [$evaluacion_id]);
         $existing_data = $stmt_check !== false ? sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC) : [];
         if ($stmt_check !== false) {
@@ -61,7 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
         if ($existing_data) {
             // Actualizar el registro existente
-            $query = "UPDATE factores_contextuales SET
+            $query = "UPDATE dbo.factores_contextuales SET
                 historia_maltrato_perpetrador = ?,
                 presencia_pares_confianza_nna = ?,
                 involucramiento_previo_servicio_proteccion = ?
@@ -75,7 +75,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             $stmt = sqlsrv_query($conn, $query, $params);
         } else {
             // Insertar un nuevo registro
-            $query = "INSERT INTO factores_contextuales (
+            $query = "INSERT INTO dbo.factores_contextuales (
                 evaluacion_id,
                 historia_maltrato_perpetrador,
                 presencia_pares_confianza_nna,
@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 } else {
     // Si no se ha enviado el formulario, verificar si ya existe un registro
-    $query = "SELECT * FROM factores_contextuales WHERE evaluacion_id = ?";
+    $query = "SELECT * FROM dbo.factores_contextuales WHERE evaluacion_id = ?";
     $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
     $existing_data = $stmt !== false ? sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC) : [];
     if ($stmt !== false) {
