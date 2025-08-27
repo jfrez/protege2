@@ -1,5 +1,7 @@
 <?php
 session_start();
+// Buffer output so redirects can send headers safely
+ob_start();
 include_once("config.php");
 include_once("header.php");
 
@@ -31,21 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (empty($errors)) {
-	    $query = "UPDATE evaluacion SET valoracion_global = ?, comentarios = ? WHERE id = ?";
-	   $query = "UPDATE evaluacion SET  valoracion_global = ?,\n obs_caracterizacion = ?, obs_variables_extra = ? WHERE id = ?";
-	    $stmt = $conn->prepare($query);
+        $query = "UPDATE dbo.evaluacion SET valoracion_global = ?, obs_caracterizacion = ?, obs_variables_extra = ? WHERE id = ?";
+        $params = [$valoracion_global, $obs_caracterizacion, $obs_variables_extra, $evaluacion_id];
+        $stmt = sqlsrv_query($conn, $query, $params);
         if ($stmt === false) {
-            die('Error en la preparación de la consulta: ' . $conn->error);
-        }
-	$stmt->bind_param('sssi', $valoracion_global, $obs_caracterizacion,$obs_variables_extra, $evaluacion_id);
-
-        if ($stmt->execute()) {
+            $errors['general'] = 'Error al guardar los datos: ' . print_r(sqlsrv_errors(), true);
+        } else {
+            sqlsrv_free_stmt($stmt);
+            // Clean any previous output before redirecting
+            ob_end_clean();
             header("Location: homepage.php");
             exit();
-        } else {
-            $errors['general'] = "Error al guardar los datos: " . $stmt->error;
         }
-        $stmt->close();
     }
 }
 
@@ -55,12 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  */
 function obtenerFactores($tabla, $evaluacion_id, $conn) {
     $query = "SELECT * FROM $tabla WHERE evaluacion_id = ?";
-    $stmt = $conn->prepare($query);
-    $stmt->bind_param("i", $evaluacion_id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $data = $result->fetch_assoc();
-    $stmt->close();
+    $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
+    if ($stmt === false) {
+        return [];
+    }
+    $data = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC) ?: [];
+    sqlsrv_free_stmt($stmt);
     return $data;
 }
 
@@ -73,18 +72,18 @@ $factores_contextuales = obtenerFactores('factores_contextuales', $evaluacion_id
 $query = "SELECT valoracion_global,
                  obs_caracterizacion,
                  obs_variables_extra
-          FROM evaluacion
+          FROM dbo.evaluacion
           WHERE id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $evaluacion_id);
-$stmt->execute();
-$stmt->bind_result(
-    $valoracion_global_actual,
-    $obs_caracterizacion_actual,
-    $obs_variables_extra_actual
-);
-$stmt->fetch();
-$stmt->close();
+$stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
+if ($stmt !== false) {
+    $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
+    if ($row) {
+        $valoracion_global_actual = $row['valoracion_global'] ?? null;
+        $obs_caracterizacion_actual = $row['obs_caracterizacion'] ?? null;
+        $obs_variables_extra_actual = $row['obs_variables_extra'] ?? null;
+    }
+    sqlsrv_free_stmt($stmt);
+}
 
 
 
