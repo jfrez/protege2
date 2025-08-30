@@ -957,6 +957,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $('#otro-relacion').prop('disabled', true).prop('required', false).val('');
             }
         }).trigger('change');
+
+        // Calcular la edad automáticamente al seleccionar la fecha de nacimiento
+        $('#fecha-nacimiento').on('change', function() {
+            var birthdate = $(this).val();
+            if (birthdate) {
+                var today = new Date();
+                var birthDate = new Date(birthdate);
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                $('#edad').val(age);
+            } else {
+                $('#edad').val('');
+            }
+        }).trigger('change');
     });
 </script>
 <!-- Bootstrap JS Bundle (incluye Popper.js) -->
