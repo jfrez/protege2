@@ -17,3 +17,4 @@ IF COL_LENGTH('evaluacion', 'cod_nino') IS NULL
 BEGIN
     ALTER TABLE evaluacion ADD cod_nino NVARCHAR(50);
 END;
+
