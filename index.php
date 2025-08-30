@@ -29,6 +29,21 @@ if (isset($_POST['login'])) {
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
+            $_SESSION['role'] = $row['role'];
+
+            if (empty($row['token'])) {
+                $row['token'] = bin2hex(random_bytes(16));
+                $updateSql = "UPDATE users SET token = ? WHERE userid = ?";
+                $updateParams = array($row['token'], $row['userid']);
+                $updateStmt = sqlsrv_query($conn, $updateSql, $updateParams);
+                if ($updateStmt === false) {
+                    die(print_r(sqlsrv_errors(), true));
+                }
+                sqlsrv_free_stmt($updateStmt);
+            }
+
+            $_SESSION['token'] = $row['token'];
+            $_SESSION['login_method'] = 'userpass';
             sqlsrv_free_stmt($stmt);
             header('Location: homepage.php');
             exit();
