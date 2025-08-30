@@ -11,15 +11,25 @@ if (!isset($_SESSION['userid'])) {
 
 $user_id = $_SESSION['userid'];
 
-// Consulta para obtener las evaluaciones realizadas por el usuario
-$query = "
-    SELECT e.*, e.evaluador AS evaluador_nombre
-    FROM evaluacion e
-    JOIN users u ON e.user_id = u.userid
-    WHERE e.user_id = ?
-";
-$params = array($user_id);
-$stmt = sqlsrv_query($conn, $query, $params);
+// Consultar evaluaciones; para administradores, mostrar todas
+if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+    $query = "
+        SELECT e.*, e.evaluador AS evaluador_nombre
+        FROM evaluacion e
+        JOIN users u ON e.user_id = u.userid
+    ";
+    $params = [];
+    $stmt = sqlsrv_query($conn, $query);
+} else {
+    $query = "
+        SELECT e.*, e.evaluador AS evaluador_nombre
+        FROM evaluacion e
+        JOIN users u ON e.user_id = u.userid
+        WHERE e.user_id = ?
+    ";
+    $params = [$user_id];
+    $stmt = sqlsrv_query($conn, $query, $params);
+}
 if ($stmt === false) {
     die(print_r(sqlsrv_errors(), true));
 }
@@ -126,54 +136,7 @@ sqlsrv_free_stmt($stmt);
         });
     }
 </script>
-<script>
-    const evaluationsData = <?php echo json_encode($evaluaciones_completas); ?>;
-
-    function toggleSearchBar() {
-        const searchBar = document.getElementById('search-bar');
-        searchBar.style.display = (searchBar.style.display === "none" || searchBar.style.display === "") ? "block" : "none";
-        if (searchBar.style.display === "block") searchBar.focus();
-    }
-
-    function showDetails(evaluationId) {
-        const evaluation = evaluationsData.find(e => e.id == evaluationId);
-        const detailDiv = document.getElementById('detail-info');
-
-        if (evaluation) {
-            detailDiv.innerHTML = `
-                <h4>${evaluation.nombre}</h4>
-                <p><strong>Riesgo:</strong> ${evaluation.valoracion_global}</p>
-                <p><strong>Edad:</strong> ${evaluation.edad}</p>
-                <p><strong>RUT:</strong> ${evaluation.rut}</p>
-                <p><strong>Fecha de Evaluación:</strong> ${evaluation.fecha_evaluacion}</p>
-                <p><strong>Evaluador:</strong> ${evaluation.evaluador_nombre}</p>
-                <a href="resumenb.php?evaluacion_id=${evaluation.id}" class="btn btn-primary">Ver Resumen</a>
-            `;
-        } else {
-            detailDiv.innerHTML = '<p>No hay detalles disponibles.</p>';
-        }
-    }
-
-    function filterEvaluations() {
-        const query = document.getElementById('search-bar').value.toLowerCase();
-        const evaluationItems = document.querySelectorAll('.list-group-item');
-
-        evaluationItems.forEach(item => {
-            const name = item.getAttribute('data-name').toLowerCase();
-            const rut = item.getAttribute('data-rut').toLowerCase();
-            const combinedText = name + ' ' + rut;
-            item.style.display = combinedText.includes(query) ? '' : 'none';
-        });
-    }
-</script>
 <!-- Agrega los scripts de Bootstrap y jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<!-- ... otros scripts ... -->
-<?php
-// Mostrar las variables de sesión para depuración
-echo '<pre>';
-print_r($_SESSION);
-echo '</pre>';
-?>
 </body>
 </html>

@@ -18,7 +18,7 @@ if (!in_array($tipo, ['bruto', 'anonimizado'])) {
 
 // Consulta base para obtener los datos de evaluación con factores
 $query_base = "
-    SELECT 
+    SELECT
         e.*,
         fi.*,
         ff.*,
@@ -27,11 +27,14 @@ $query_base = "
     LEFT JOIN factores_individuales fi ON e.id = fi.evaluacion_id
     LEFT JOIN factores_familiares ff ON e.id = ff.evaluacion_id
     LEFT JOIN factores_contextuales fc ON e.id = fc.evaluacion_id
-    WHERE e.user_id = ?
 ";
 
-$user_id = $_SESSION['userid'];
-$params = array($user_id);
+$params = [];
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $query_base .= " WHERE e.user_id = ?";
+    $params[] = $_SESSION['userid'];
+}
+
 $stmt = sqlsrv_query($conn, $query_base, $params);
 if ($stmt === false) {
     die(print_r(sqlsrv_errors(), true));
