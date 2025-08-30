@@ -101,6 +101,22 @@ BEGIN
     );
 END
 
+-- Ensure essential columns exist even if evaluacion table already exists
+IF COL_LENGTH('dbo.evaluacion', 'cod_nino') IS NULL
+BEGIN
+    ALTER TABLE dbo.evaluacion ADD cod_nino NVARCHAR(50);
+END;
+
+IF COL_LENGTH('dbo.evaluacion', 'token') IS NULL
+BEGIN
+    ALTER TABLE dbo.evaluacion ADD token NVARCHAR(64);
+END;
+
+IF COL_LENGTH('dbo.evaluacion', 'login_method') IS NULL
+BEGIN
+    ALTER TABLE dbo.evaluacion ADD login_method NVARCHAR(20);
+END;
+
 IF OBJECT_ID(N'dbo.factores_individuales', N'U') IS NULL
 BEGIN
     CREATE TABLE dbo.factores_individuales (
