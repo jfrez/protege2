@@ -30,6 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Recibir y sanitizar datos del formulario
     $nombre = trim($_POST['nombre'] ?? '');
     $rut = trim($_POST['rut'] ?? '');
+    $cod_nino = trim($_POST['cod-nino'] ?? '');
     $fecha_nacimiento = trim($_POST['fecha-nacimiento'] ?? '');
     $edad = trim($_POST['edad'] ?? '');
     $escolaridad = trim($_POST['escolaridad'] ?? '');
@@ -87,6 +88,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (!preg_match("/^\d{1,8}-[0-9kK]$/", $rut)) {
             $errors['rut'] = "El RUT no tiene un formato válido. Formato esperado: 12345678-9 o 12345678-K.";
         }
+    }
+
+    if (empty($cod_nino)) {
+        $errors['cod_nino'] = "El campo CodNino es obligatorio.";
+    } elseif (!ctype_digit($cod_nino)) {
+        $errors['cod_nino'] = "El CodNino debe ser numérico.";
     }
 
     if (empty($fecha_nacimiento)) {
@@ -207,6 +214,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $query = "UPDATE dbo.evaluacion SET
                         nombre = ?,
                         rut = ?,
+                        cod_nino = ?,
                         fecha_nacimiento = ?,
                         edad = ?,
                         escolaridad = ?,
@@ -238,6 +246,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $params = [
                 $nombre,
                 $rut,
+                $cod_nino,
                 $fecha_nacimiento,
                 $edad,
                 $escolaridad,
@@ -281,14 +290,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         } else {
             // Insertar nuevo registro
             $query = "INSERT INTO dbo.evaluacion
-                        (nombre, rut, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
+                        (nombre, rut, cod_nino, fecha_nacimiento, edad, escolaridad, region, localidad, zona, sexo, diversidad, diversidad_cual, nacionalidad, pais_origen, situacion_migratoria, pueblo, pueblo_cual, convivencia, maltrato, otro_maltrato, relacion_perpetrador, otro_relacion, fuente, evaluador, profesion, centro, fecha_evaluacion, user_id, token, login_method)
                         OUTPUT INSERTED.id
                       VALUES
-                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             $params = [
                 $nombre,
                 $rut,
+                $cod_nino,
                 $fecha_nacimiento,
                 $edad,
                 $escolaridad,
@@ -385,7 +395,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <div class="card-body">
                 <div class="form-row">
                     <!-- Nombre -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="nombre" class="required">Nombre</label>
                         <input type="text" class="form-control <?php echo isset($errors['nombre']) ? 'is-invalid' : ''; ?>" id="nombre" name="nombre" value="<?php echo htmlspecialchars($_POST['nombre'] ?? $existing_data['nombre'] ?? ''); ?>" required>
                         <?php if (isset($errors['nombre'])): ?>
@@ -396,12 +406,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     </div>
 
                     <!-- RUT -->
-                    <div class="form-group col-md-6">
+                    <div class="form-group col-md-4">
                         <label for="rut" class="required">RUT</label>
                         <input type="text" class="form-control <?php echo isset($errors['rut']) ? 'is-invalid' : ''; ?>" id="rut" name="rut" value="<?php echo htmlspecialchars($_POST['rut'] ?? $existing_data['rut'] ?? ''); ?>" required pattern="\d{1,8}-[0-9kK]" title="Formato: 12345678-9 o 12345678-K">
                         <?php if (isset($errors['rut'])): ?>
                             <div class="invalid-feedback">
                                 <?php echo htmlspecialchars($errors['rut']); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- CodNino -->
+                    <div class="form-group col-md-4">
+                        <label for="cod-nino" class="required">CodNino</label>
+                        <input type="text" class="form-control <?php echo isset($errors['cod_nino']) ? 'is-invalid' : ''; ?>" id="cod-nino" name="cod-nino" value="<?php echo htmlspecialchars($_POST['cod-nino'] ?? $existing_data['cod_nino'] ?? ''); ?>" required pattern="\d+" title="Solo números">
+                        <?php if (isset($errors['cod_nino'])): ?>
+                            <div class="invalid-feedback">
+                                <?php echo htmlspecialchars($errors['cod_nino']); ?>
                             </div>
                         <?php endif; ?>
                     </div>
