@@ -11,6 +11,22 @@ if (!isset($_SESSION['userid'])) {
 
 $user_id = $_SESSION['userid'];
 
+// Ensure cod_nino column exists in evaluacion table
+$colCheckSql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'evaluacion' AND COLUMN_NAME = 'cod_nino'";
+$colCheckStmt = sqlsrv_query($conn, $colCheckSql);
+if ($colCheckStmt && !sqlsrv_fetch_array($colCheckStmt, SQLSRV_FETCH_ASSOC)) {
+    sqlsrv_free_stmt($colCheckStmt);
+    $addColSql = "ALTER TABLE evaluacion ADD cod_nino NVARCHAR(50)";
+    $addColStmt = sqlsrv_query($conn, $addColSql);
+    if ($addColStmt === false) {
+        error_log('Error al agregar cod_nino: ' . print_r(sqlsrv_errors(), true));
+    } else {
+        sqlsrv_free_stmt($addColStmt);
+    }
+} elseif ($colCheckStmt) {
+    sqlsrv_free_stmt($colCheckStmt);
+}
+
 // Consultar evaluaciones; para administradores, mostrar todas
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $query = "
