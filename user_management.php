@@ -47,6 +47,7 @@ if (isset($_POST['delete'])) {
 
 // Fetch users
 $query = "SELECT userid, name, last_name, email, role FROM users";
+
 $stmt = sqlsrv_query($conn, $query);
 if ($stmt === false) {
     die(print_r(sqlsrv_errors(), true));
