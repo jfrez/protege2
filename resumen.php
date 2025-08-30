@@ -46,6 +46,7 @@ $data_seccion8 = get_section_data($conn, $evaluacion_id, 'seccion8');
 // Mapear los datos a variables para facilitar su uso en el HTML
 $nombre = $data_evaluacion['nombre'] ?? '';
 $rut = $data_evaluacion['rut'] ?? '';
+$cod_nino = $data_evaluacion['cod_nino'] ?? '';
 $fecha_nacimiento = $data_evaluacion['fecha_nacimiento'] ?? '';
 $edad = $data_evaluacion['edad'] ?? '';
 $direccion = $data_evaluacion['direccion'] ?? ''; // Si tienes un campo de dirección
@@ -102,6 +103,7 @@ $conn->close();
             <!-- Other Fields in Normal Layout -->
             <p>Edad: <span id="summaryAge"><?php echo htmlspecialchars($edad); ?></span></p>
             <p>RUT: <span id="summaryRUT"><?php echo htmlspecialchars($rut); ?></span></p>
+            <p>CodNino: <span id="summaryCodNino"><?php echo htmlspecialchars($cod_nino); ?></span></p>
         </div>
 
         <!-- Sección de Factores Personales -->
