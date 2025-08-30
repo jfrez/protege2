@@ -18,7 +18,7 @@ $user = sqlsrv_fetch_array($userStmt, SQLSRV_FETCH_ASSOC);
 sqlsrv_free_stmt($userStmt);
 $userName = $user ? $user['name'] . ' ' . $user['last_name'] : 'Usuario';
 
-$evalQuery = "SELECT id, nombre, rut, valoracion_global, fecha_evaluacion
+$evalQuery = "SELECT id, nombre, rut, cod_nino, valoracion_global, fecha_evaluacion
               FROM evaluacion WHERE user_id = ? ORDER BY fecha_evaluacion DESC";
 $params = [$user_id];
 $stmt = sqlsrv_query($conn, $evalQuery, $params);
@@ -35,6 +35,7 @@ include_once("header.php");
             <tr>
                 <th>Nombre</th>
                 <th>RUT</th>
+                <th>Código Niño</th>
                 <th>Riesgo</th>
                 <th>Fecha</th>
                 <th>Acciones</th>
@@ -45,6 +46,7 @@ include_once("header.php");
             <tr>
                 <td><?= htmlspecialchars($row['nombre']) ?></td>
                 <td><?= htmlspecialchars($row['rut']) ?></td>
+                <td><?= htmlspecialchars($row['cod_nino']) ?></td>
                 <td><?= htmlspecialchars($row['valoracion_global']) ?></td>
                 <td><?= $row['fecha_evaluacion'] instanceof DateTime ? $row['fecha_evaluacion']->format('Y-m-d') : htmlspecialchars($row['fecha_evaluacion']) ?></td>
                 <td>
