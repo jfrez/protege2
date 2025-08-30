@@ -962,6 +962,28 @@
 </div>
 <script>
 
+    const fechaInput = document.getElementById('fecha-nacimiento');
+    const edadInput = document.getElementById('edad');
+
+    function calcularEdad() {
+        const birthdate = fechaInput.value;
+        if (birthdate) {
+            const today = new Date();
+            const birthDate = new Date(birthdate);
+            let age = today.getFullYear() - birthDate.getFullYear();
+            const m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            edadInput.value = age;
+        } else {
+            edadInput.value = '';
+        }
+    }
+
+    fechaInput.addEventListener('change', calcularEdad);
+    calcularEdad();
+
     function updateSlider(slider, valueId) {
         const sliderValue = document.getElementById(valueId);
         const value = slider.value;
