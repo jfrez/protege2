@@ -14,7 +14,10 @@ done
 for f in /docker-entrypoint-initdb.d/*.sql; do
   [ -f "$f" ] || continue
   echo "Running $f"
-  /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" -d master -i "$f"
+  if ! /opt/mssql-tools/bin/sqlcmd -b -S localhost -U sa -P "$SA_PASSWORD" -d master -i "$f"; then
+    echo "Error running $f"
+    exit 1
+  fi
 done
 
 wait $PID
