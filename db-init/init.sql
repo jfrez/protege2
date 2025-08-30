@@ -65,6 +65,7 @@ BEGIN
       id INT IDENTITY PRIMARY KEY,
       nombre NVARCHAR(255),
       rut NVARCHAR(50),
+      cod_nino NVARCHAR(50),
       fecha_nacimiento DATE,
       edad INT,
       escolaridad NVARCHAR(255),
