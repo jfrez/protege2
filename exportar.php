@@ -19,6 +19,7 @@ if (!in_array($tipo, ['bruto', 'anonimizado'])) {
 // Consulta base para obtener los datos de evaluación con factores
 $query_base = "
     SELECT
+        e.cod_nino,
         e.*,
         fi.*,
         ff.*,
