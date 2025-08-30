@@ -169,5 +169,11 @@ sqlsrv_free_stmt($stmt);
 <!-- Agrega los scripts de Bootstrap y jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <!-- ... otros scripts ... -->
+<?php
+// Mostrar las variables de sesión para depuración
+echo '<pre>';
+print_r($_SESSION);
+echo '</pre>';
+?>
 </body>
 </html>
