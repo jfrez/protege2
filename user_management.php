@@ -39,6 +39,9 @@ if (isset($_POST['update'])) {
 // Fetch users with assessment stats
 $query = "SELECT u.userid, u.name, u.last_name, u.email, u.role, COUNT(a.id) AS total, SUM(CASE WHEN a.result IS NOT NULL THEN 1 ELSE 0 END) AS completed FROM users u LEFT JOIN assessments a ON u.userid=a.userid GROUP BY u.userid, u.name, u.last_name, u.email, u.role";
 $stmt = sqlsrv_query($conn, $query);
+if ($stmt === false) {
+    die(print_r(sqlsrv_errors(), true));
+}
 include_once("header.php");
 ?>
 <div class="container mt-4">
