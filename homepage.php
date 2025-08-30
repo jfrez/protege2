@@ -54,17 +54,6 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     $evaluaciones[] = $row;
 }
 sqlsrv_free_stmt($stmt);
-
-// Obtener nombres de columnas de la tabla evaluacion
-$evaluacion_campos = [];
-$col_query = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'evaluacion'";
-$col_stmt = sqlsrv_query($conn, $col_query);
-if ($col_stmt !== false) {
-    while ($col_row = sqlsrv_fetch_array($col_stmt, SQLSRV_FETCH_ASSOC)) {
-        $evaluacion_campos[] = $col_row['COLUMN_NAME'];
-    }
-    sqlsrv_free_stmt($col_stmt);
-}
 ?>
 
 <!-- Main Content -->
@@ -165,14 +154,5 @@ if ($col_stmt !== false) {
 </script>
 <!-- Agrega los scripts de Bootstrap y jQuery -->
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-
-<div class="container mt-5">
-    <h4>Campos de la tabla evaluacion</h4>
-    <ul>
-        <?php foreach ($evaluacion_campos as $campo): ?>
-            <li><?php echo htmlspecialchars($campo); ?></li>
-        <?php endforeach; ?>
-    </ul>
-</div>
 </body>
 </html>
