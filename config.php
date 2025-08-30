@@ -60,6 +60,29 @@ $schemaQueries = [
     // Ensure role column is available
     "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END",
 
+    // Create people table if it doesn't exist
+    "IF OBJECT_ID(N'people', N'U') IS NULL BEGIN CREATE TABLE people (" .
+        " id INT IDENTITY PRIMARY KEY," .
+        " name NVARCHAR(100)," .
+        " address NVARCHAR(255)," .
+        " age INT," .
+        " last_name NVARCHAR(100)," .
+        " last_name2 NVARCHAR(100)," .
+        " middle_name NVARCHAR(100)," .
+        " rut NVARCHAR(50)" .
+    "); END",
+
+    // Create assessments table if it doesn't exist
+    "IF OBJECT_ID(N'assessments', N'U') IS NULL BEGIN CREATE TABLE assessments (" .
+        " id INT IDENTITY PRIMARY KEY," .
+        " input NVARCHAR(MAX)," .
+        " result NVARCHAR(255)," .
+        " personid INT," .
+        " userid INT," .
+        " FOREIGN KEY (personid) REFERENCES people(id)," .
+        " FOREIGN KEY (userid) REFERENCES users(userid)" .
+    "); END",
+
     // Create evaluacion table if it doesn't exist
     // Ensure evaluacion table exists under dbo schema
     "IF OBJECT_ID(N'dbo.evaluacion', N'U') IS NULL BEGIN CREATE TABLE dbo.evaluacion (" .
