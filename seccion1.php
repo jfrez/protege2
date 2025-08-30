@@ -727,7 +727,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <label class="required">Con Quiénes Vive</label>
                         <?php
                         $convivencia_options = ['madre', 'padre', 'abuelo/a' ,'tío/a' ,'hermano/a','residencia de protección','familia de acogida','otros'];
-                        $convivencia_selected = explode(',', $_POST['convivencia'] ?? $existing_data['convivencia'] ?? '');
+                        if (isset($_POST['convivencia']) && is_array($_POST['convivencia'])) {
+                            $convivencia_selected = $_POST['convivencia'];
+                        } else {
+                            $convivencia_selected = explode(',', $existing_data['convivencia'] ?? '');
+                        }
                         foreach ($convivencia_options as $option) {
                             $checked = in_array($option, $convivencia_selected) ? 'checked' : '';
                             echo '<div class="custom-control custom-checkbox">';
@@ -955,6 +959,23 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                $('#otro-relacion').prop('disabled', false).prop('required', true);
             } else {
                 $('#otro-relacion').prop('disabled', true).prop('required', false).val('');
+            }
+        }).trigger('change');
+
+        // Calcular la edad automáticamente al seleccionar la fecha de nacimiento
+        $('#fecha-nacimiento').on('change', function() {
+            var birthdate = $(this).val();
+            if (birthdate) {
+                var today = new Date();
+                var birthDate = new Date(birthdate);
+                var age = today.getFullYear() - birthDate.getFullYear();
+                var m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                $('#edad').val(age);
+            } else {
+                $('#edad').val('');
             }
         }).trigger('change');
     });
