@@ -9,6 +9,9 @@ on:
 jobs:
   automerge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write      # ⬅️ permite push al repo
+      pull-requests: write # ⬅️ opcional, si quieres que cierre/actualice PRs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,4 +28,3 @@ jobs:
           git checkout main
           git merge -X theirs ${{ github.event.pull_request.head.sha }} --commit --no-edit || true
           git push origin main
-
