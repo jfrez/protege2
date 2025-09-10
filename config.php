@@ -23,6 +23,13 @@ function verify_csrf_token($token) {
 function csrf_input() {
     echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(get_csrf_token()) . '">';
 }
+
+// Enforce password change when required
+if (isset($_SESSION['userid']) && !empty($_SESSION['must_change_password'])
+    && !in_array(basename($_SERVER['PHP_SELF']), ['change_password.php', 'logout.php'])) {
+    header('Location: change_password.php');
+    exit();
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -88,6 +95,9 @@ $schemaQueries = [
     "IF COL_LENGTH('users', 'token_expires_at') IS NULL BEGIN ALTER TABLE users ADD token_expires_at DATETIME; END",
     "IF COL_LENGTH('users', 'token_used') IS NULL BEGIN ALTER TABLE users ADD token_used BIT DEFAULT 0; END",
     "IF COL_LENGTH('users', 'token') IS NOT NULL BEGIN ALTER TABLE users DROP COLUMN token; END",
+
+    // Ensure must_change_password column exists
+    "IF COL_LENGTH('users', 'must_change_password') IS NULL BEGIN ALTER TABLE users ADD must_change_password BIT NOT NULL DEFAULT 0; END",
 
     // Create people table if it doesn't exist
     "IF OBJECT_ID(N'people', N'U') IS NULL BEGIN CREATE TABLE people (" .

@@ -4,7 +4,7 @@ include_once("config.php");
 if (isset($_POST['token']) && $_POST['token'] !== '') {
     $token = $_POST['token'];
     $tokenHash = hash('sha256', $token);
-    $sql = "SELECT userid, email, name, role FROM users WHERE token_hash = ? AND token_used = 0 AND token_expires_at > GETDATE()";
+    $sql = "SELECT userid, email, name, role, must_change_password FROM users WHERE token_hash = ? AND token_used = 0 AND token_expires_at > GETDATE()";
     $params = array($tokenHash);
     $stmt = sqlsrv_query($conn, $sql, $params);
     if ($stmt === false) {
@@ -17,6 +17,7 @@ if (isset($_POST['token']) && $_POST['token'] !== '') {
         $_SESSION['name'] = $row['name'];
         $_SESSION['login_method'] = 'token';
         $_SESSION['role'] = $row['role'];
+        $_SESSION['must_change_password'] = $row['must_change_password'];
         $_SESSION['token'] = bin2hex(random_bytes(16));
         sqlsrv_free_stmt($stmt);
         $invalidateSql = "UPDATE users SET token_hash = NULL, token_expires_at = NULL, token_used = 1 WHERE userid = ?";
@@ -24,7 +25,11 @@ if (isset($_POST['token']) && $_POST['token'] !== '') {
         if ($invalidateStmt !== false) {
             sqlsrv_free_stmt($invalidateStmt);
         }
-        header('Location: homepage.php');
+        if ($row['must_change_password']) {
+            header('Location: change_password.php');
+        } else {
+            header('Location: homepage.php');
+        }
         exit();
     } else {
         sqlsrv_free_stmt($stmt);
