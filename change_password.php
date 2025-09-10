@@ -89,3 +89,7 @@ include_once("header.php");
         <button type="submit" name="change_password" class="btn btn-primary">Cambiar</button>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
