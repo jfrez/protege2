@@ -37,18 +37,18 @@ if (isset($_POST['login'])) {
             $_SESSION['name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
 
-            if (empty($row['token'])) {
-                $row['token'] = bin2hex(random_bytes(16));
-                $updateSql = "UPDATE users SET token = ? WHERE userid = ?";
-                $updateParams = array($row['token'], $row['userid']);
-                $updateStmt = sqlsrv_query($conn, $updateSql, $updateParams);
-                if ($updateStmt === false) {
-                    die(print_r(sqlsrv_errors(), true));
-                }
-                sqlsrv_free_stmt($updateStmt);
+            $token = bin2hex(random_bytes(16));
+            $tokenHash = hash('sha256', $token);
+            $expiresAt = date('Y-m-d H:i:s', time() + 3600);
+            $updateSql = "UPDATE users SET token_hash = ?, token_expires_at = ?, token_used = 0 WHERE userid = ?";
+            $updateParams = array($tokenHash, $expiresAt, $row['userid']);
+            $updateStmt = sqlsrv_query($conn, $updateSql, $updateParams);
+            if ($updateStmt === false) {
+                die(print_r(sqlsrv_errors(), true));
             }
+            sqlsrv_free_stmt($updateStmt);
 
-            $_SESSION['token'] = $row['token'];
+            $_SESSION['token'] = $token;
             $_SESSION['login_method'] = 'userpass';
             sqlsrv_free_stmt($stmt);
             header('Location: homepage.php');

@@ -15,7 +15,9 @@ BEGIN
       last_name NVARCHAR(100),
       email NVARCHAR(255) UNIQUE NOT NULL,
       password NVARCHAR(255) NOT NULL,
-      token NVARCHAR(64)
+      token_hash NVARCHAR(64),
+      token_expires_at DATETIME,
+      token_used BIT DEFAULT 0
     );
 END
 
@@ -24,6 +26,26 @@ IF COL_LENGTH('users', 'role') IS NULL
 BEGIN
     ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user';
 END
+
+IF COL_LENGTH('users', 'token_hash') IS NULL
+BEGIN
+    ALTER TABLE users ADD token_hash NVARCHAR(64);
+END;
+
+IF COL_LENGTH('users', 'token_expires_at') IS NULL
+BEGIN
+    ALTER TABLE users ADD token_expires_at DATETIME;
+END;
+
+IF COL_LENGTH('users', 'token_used') IS NULL
+BEGIN
+    ALTER TABLE users ADD token_used BIT DEFAULT 0;
+END;
+
+IF COL_LENGTH('users', 'token') IS NOT NULL
+BEGIN
+    ALTER TABLE users DROP COLUMN token;
+END;
 
 -- Create default admin account if not present
 IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com')
