@@ -5,6 +5,12 @@ $error = '';
 $generatedPassword = '';
 $email = '';
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
+}
+
 if (isset($_POST['register'])) {
     $name = $_POST['name'];
     $lastname = $_POST['last_name'];
@@ -108,6 +114,7 @@ if (isset($_POST['register'])) {
         <p class="error" style="color:red;"><?= $error ?></p>
     <?php endif; ?>
     <form action="register.php" method="POST">
+        <?php csrf_input(); ?>
         <input type="text" name="name" placeholder="First Name" required>
         <input type="text" name="last_name" placeholder="Last Name" required>
         <input type="text" name="email" placeholder="Email" required>

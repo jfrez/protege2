@@ -5,6 +5,12 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     exit();
 }
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
+}
+
 // Create user
 if (isset($_POST['create'])) {
     $name = $_POST['name'];
@@ -80,6 +86,7 @@ include_once("header.php");
                         data-last_name="<?= htmlspecialchars($row['last_name']) ?>" data-email="<?= htmlspecialchars($row['email']) ?>"
                         data-role="<?= $row['role'] ?>">Editar</button>
                     <form method="POST" style="display:inline;" onsubmit="return confirm('¿Está seguro de que desea eliminar este usuario y todas sus evaluaciones?');">
+                        <?php csrf_input(); ?>
                         <input type="hidden" name="userid" value="<?= $row['userid'] ?>" />
                         <button type="submit" name="delete" class="btn btn-danger btn-sm">Eliminar</button>
                     </form>
@@ -95,6 +102,7 @@ include_once("header.php");
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="POST">
+        <?php csrf_input(); ?>
         <div class="modal-header">
           <h5 class="modal-title" id="createUserModalLabel">Agregar Usuario</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -140,6 +148,7 @@ include_once("header.php");
   <div class="modal-dialog" role="document">
     <div class="modal-content">
       <form method="POST">
+        <?php csrf_input(); ?>
         <div class="modal-header">
           <h5 class="modal-title" id="editUserModalLabel">Editar Usuario</h5>
           <button type="button" class="close" data-dismiss="modal" aria-label="Close">

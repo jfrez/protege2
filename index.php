@@ -1,5 +1,4 @@
-<?php 
-session_start();
+<?php
 include_once("config.php");
 
 // Aseguramos que $error esté definido para evitar warnings
@@ -12,6 +11,12 @@ if (isset($_SESSION['userid'])) {
 }
 
 // Verificamos si se envió el formulario de login
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
+}
+
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -68,6 +73,7 @@ include_once("header.php");
         <div class="container">
             <h2>PROTEGE</h2>
             <form action="index.php" method="POST">
+                <?php csrf_input(); ?>
                 <input type="text" name="email" placeholder="Email" required>
                 <input type="password" name="password" placeholder="Contraseña" required>
                 <button type="submit" name="login">Login</button>
