@@ -17,7 +17,8 @@ BEGIN
       password NVARCHAR(255) NOT NULL,
       token_hash NVARCHAR(64),
       token_expires_at DATETIME,
-      token_used BIT DEFAULT 0
+      token_used BIT DEFAULT 0,
+      must_change_password BIT NOT NULL DEFAULT 0
     );
 END
 
@@ -45,6 +46,11 @@ END;
 IF COL_LENGTH('users', 'token') IS NOT NULL
 BEGIN
     ALTER TABLE users DROP COLUMN token;
+END;
+
+IF COL_LENGTH('users', 'must_change_password') IS NULL
+BEGIN
+    ALTER TABLE users ADD must_change_password BIT NOT NULL DEFAULT 0;
 END;
 
 -- Create default admin account if not present

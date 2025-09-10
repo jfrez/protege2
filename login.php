@@ -25,6 +25,7 @@ if (isset($_POST['login'])) {
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
+            $_SESSION['must_change_password'] = $row['must_change_password'];
 
             $token = bin2hex(random_bytes(16));
             $tokenHash = hash('sha256', $token);
@@ -39,7 +40,11 @@ if (isset($_POST['login'])) {
 
             $_SESSION['token'] = $token;
             $_SESSION['login_method'] = 'userpass';
-            header('Location: homepage.php');
+            if ($row['must_change_password']) {
+                header('Location: change_password.php');
+            } else {
+                header('Location: homepage.php');
+            }
             exit();
         } else {
             $error = 'Invalid password!';

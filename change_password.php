@@ -1,5 +1,6 @@
 <?php
 include_once("config.php");
+include_once("utils/password_utils.php");
 
 if (!isset($_SESSION['userid'])) {
     header('Location: login.php');
@@ -22,13 +23,16 @@ if (isset($_POST['change_password'])) {
 
     if ($new !== $confirm) {
         $message = 'Las nuevas contraseñas no coinciden.';
+    } elseif (!passwordMeetsPolicy($new)) {
+        $message = 'La nueva clave no cumple con la política de complejidad.';
     } else {
         $stmt = sqlsrv_query($conn, 'SELECT password FROM users WHERE userid = ?', [$_SESSION['userid']]);
         if ($stmt && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
             if (password_verify($current, $row['password'])) {
                 $hashed = password_hash($new, PASSWORD_BCRYPT);
-                $update = sqlsrv_query($conn, 'UPDATE users SET password = ? WHERE userid = ?', [$hashed, $_SESSION['userid']]);
+                $update = sqlsrv_query($conn, 'UPDATE users SET password = ?, must_change_password = 0 WHERE userid = ?', [$hashed, $_SESSION['userid']]);
                 if ($update) {
+                    $_SESSION['must_change_password'] = 0;
                     $message = 'Clave actualizada correctamente.';
                     $success = true;
                 } else {

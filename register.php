@@ -1,5 +1,6 @@
 <?php
 include_once("config.php");
+include_once("utils/password_utils.php");
 
 $error = '';
 $generatedPassword = '';
@@ -16,8 +17,8 @@ if (isset($_POST['register'])) {
     $lastname = $_POST['last_name'];
     $email = $_POST['email'];
 
-    // Generate a random password
-    $generatedPassword = bin2hex(random_bytes(4)); // Generates a 8-character random password
+    // Generate a secure temporary password
+    $generatedPassword = generateSecurePassword(16);
     $hashedPassword = password_hash($generatedPassword, PASSWORD_BCRYPT);
 
     // Check if email already exists
@@ -30,14 +31,16 @@ if (isset($_POST['register'])) {
     } elseif (sqlsrv_fetch($stmt)) {
         $error = 'email already exists!';
     } else {
-        $sql = "INSERT INTO users (name, last_name, email, password, role) VALUES (?, ?, ?, ?, 'user')";
+        $sql = "INSERT INTO users (name, last_name, email, password, role, must_change_password) VALUES (?, ?, ?, ?, 'user', 1)";
         $params = array($name, $lastname, $email, $hashedPassword);
         $stmt = sqlsrv_query($conn, $sql, $params);
         if ($stmt) {
-            // Use JavaScript to show credentials in a popup
-            echo "<script>
-                    alert('Registro exitoso!\\nEmail: $email\\nClave: $generatedPassword');
-                  </script>";
+            // Send credentials via email instead of displaying them
+            $subject = 'Credenciales de acceso PROTEGE';
+            $message = "Su clave temporal es: $generatedPassword\nPor favor, cámbiela al iniciar sesión.";
+            $headers = 'Content-Type: text/plain; charset=UTF-8';
+            @mail($email, $subject, $message, $headers);
+            echo '<p style="color:green;">Registro exitoso. La clave inicial se envió al correo proporcionado.</p>';
         } else {
             $error = 'Registro fallido!';
         }

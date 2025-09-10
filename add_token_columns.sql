@@ -18,6 +18,11 @@ BEGIN
     ALTER TABLE users DROP COLUMN token;
 END;
 
+IF COL_LENGTH('users', 'must_change_password') IS NULL
+BEGIN
+    ALTER TABLE users ADD must_change_password BIT NOT NULL DEFAULT 0;
+END;
+
 IF COL_LENGTH('evaluacion', 'token') IS NULL
 BEGIN
     ALTER TABLE evaluacion ADD token NVARCHAR(64);
