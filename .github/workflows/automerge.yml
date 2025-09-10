@@ -9,6 +9,9 @@ on:
 jobs:
   automerge:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write      # ⬅️ permite push al repo
+      pull-requests: write # ⬅️ opcional, si quieres que cierre/actualice PRs
     steps:
       - name: Checkout
         uses: actions/checkout@v4
