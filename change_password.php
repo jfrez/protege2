@@ -9,6 +9,12 @@ if (!isset($_SESSION['userid'])) {
 $message = '';
 $success = false;
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
+}
+
 if (isset($_POST['change_password'])) {
     $current = $_POST['current_password'];
     $new = $_POST['new_password'];
@@ -46,6 +52,7 @@ include_once("header.php");
         <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?>"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
     <form method="POST">
+        <?php csrf_input(); ?>
         <div class="form-group">
             <label>Clave Actual</label>
             <input type="password" name="current_password" class="form-control" required>

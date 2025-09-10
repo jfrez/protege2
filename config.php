@@ -2,6 +2,27 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// CSRF token handling
+if (empty($_SESSION['csrf'])) {
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+}
+
+function get_csrf_token() {
+    return $_SESSION['csrf'] ?? '';
+}
+
+function verify_csrf_token($token) {
+    if (!isset($_SESSION['csrf']) || !hash_equals($_SESSION['csrf'], $token)) {
+        return false;
+    }
+    $_SESSION['csrf'] = bin2hex(random_bytes(32));
+    return true;
+}
+
+function csrf_input() {
+    echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(get_csrf_token()) . '">';
+}
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
