@@ -1,5 +1,6 @@
 <?php include_once("config.php"); ?>
 <?php include_once("header.php"); ?>
+<?php include_once("utils/password_utils.php"); ?>
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -27,6 +28,13 @@ if (isset($_POST['login'])) {
             $_SESSION['role'] = $row['role'];
             $_SESSION['must_change_password'] = $row['must_change_password'];
 
+            if (!passwordMeetsPolicy($password)) {
+                $_SESSION['must_change_password'] = 1;
+                $row['must_change_password'] = 1;
+                sqlsrv_query($conn, 'UPDATE users SET must_change_password = 1 WHERE userid = ?', [$row['userid']]);
+                $_SESSION['policy_message'] = 'Su clave no cumple con la política de complejidad. Debe cambiarla.';
+            }
+
             $token = bin2hex(random_bytes(16));
             $tokenHash = hash('sha256', $token);
             $expiresAt = date('Y-m-d H:i:s', time() + 3600);
@@ -40,7 +48,7 @@ if (isset($_POST['login'])) {
 
             $_SESSION['token'] = $token;
             $_SESSION['login_method'] = 'userpass';
-            if ($row['must_change_password']) {
+            if ($_SESSION['must_change_password']) {
                 header('Location: change_password.php');
             } else {
                 header('Location: homepage.php');
