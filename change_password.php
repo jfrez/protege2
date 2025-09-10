@@ -21,7 +21,7 @@ if (isset($_POST['change_password'])) {
         if ($stmt && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
             if (password_verify($current, $row['password'])) {
                 $hashed = password_hash($new, PASSWORD_BCRYPT);
-                $update = sqlsrv_query($conn, 'UPDATE users SET password = ? WHERE userid = ?', [$hashed, $_SESSION['userid']]);
+                $update = sqlsrv_query($conn, 'UPDATE users SET password = ?, must_change_password = 0 WHERE userid = ?', [$hashed, $_SESSION['userid']]);
                 if ($update) {
                     $message = 'Clave actualizada correctamente.';
                     $success = true;

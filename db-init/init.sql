@@ -15,7 +15,8 @@ BEGIN
       last_name NVARCHAR(100),
       email NVARCHAR(255) UNIQUE NOT NULL,
       password NVARCHAR(255) NOT NULL,
-      token NVARCHAR(64)
+      token NVARCHAR(64),
+      must_change_password BIT NOT NULL DEFAULT 1
     );
 END
 
@@ -28,8 +29,8 @@ END
 -- Create default admin account if not present
 IF NOT EXISTS (SELECT 1 FROM users WHERE email = 'admin@example.com')
 BEGIN
-    INSERT INTO users (name, last_name, email, password, role)
-    VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin');
+    INSERT INTO users (name, last_name, email, password, role, must_change_password)
+    VALUES ('Admin', 'User', 'admin@example.com', '$2y$12$pIRJVfkFCavvy/VmyqJXTuyN1vDkCwscRYDj5Mi0.7ueK/ebkpEve', 'admin', 0);
 END
 
 IF OBJECT_ID(N'people', N'U') IS NULL

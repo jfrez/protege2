@@ -14,7 +14,6 @@ if (isset($_POST['login'])) {
 
     if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
-            $error = 'ok!!';
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
@@ -33,7 +32,11 @@ if (isset($_POST['login'])) {
 
             $_SESSION['token'] = $row['token'];
             $_SESSION['login_method'] = 'userpass';
-            header('Location: homepage.php');
+            if (!empty($row['must_change_password'])) {
+                header('Location: change_password.php?first=1');
+            } else {
+                header('Location: homepage.php');
+            }
             exit();
         } else {
             $error = 'Invalid password!';
