@@ -28,4 +28,3 @@ jobs:
           git checkout main
           git merge -X theirs ${{ github.event.pull_request.head.sha }} --commit --no-edit || true
           git push origin main
-
