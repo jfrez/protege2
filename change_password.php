@@ -70,7 +70,12 @@ include_once("header.php");
 <div class="container mt-4">
     <h2>Cambiar Clave</h2>
     <?php if ($message): ?>
-        <div class="alert <?= $messageClass ?>"><?= htmlspecialchars($message) ?></div>
+        <div class="alert <?= $messageClass ?>">
+            <?= htmlspecialchars($message) ?>
+            <?php if ($success): ?>
+                Redirigiendo en <span id="countdown">3</span>...
+            <?php endif; ?>
+        </div>
     <?php endif; ?>
     <form method="POST">
         <?php csrf_input(); ?>
@@ -91,5 +96,19 @@ include_once("header.php");
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<?php if ($success): ?>
+<script>
+let countdown = 3;
+const counter = document.getElementById('countdown');
+const interval = setInterval(() => {
+    countdown--;
+    if (counter) counter.textContent = countdown;
+    if (countdown <= 0) {
+        clearInterval(interval);
+        window.location.href = 'homepage.php';
+    }
+}, 1000);
+</script>
+<?php endif; ?>
 </body>
 </html>

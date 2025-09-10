@@ -10,6 +10,11 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $user_id = $_SESSION['userid'];
+$policyWarning = '';
+if (isset($_SESSION['policy_message'])) {
+    $policyWarning = $_SESSION['policy_message'];
+    unset($_SESSION['policy_message']);
+}
 
 // Ensure cod_nino column exists in evaluacion table
 $colCheckSql = "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME = 'evaluacion' AND COLUMN_NAME = 'cod_nino'";
@@ -58,6 +63,9 @@ sqlsrv_free_stmt($stmt);
 
 <!-- Main Content -->
 <div class="container mt-5">
+    <?php if ($policyWarning): ?>
+        <div class="alert alert-warning"><?php echo htmlspecialchars($policyWarning); ?></div>
+    <?php endif; ?>
     <div class="row">
         <div class="col-md-12 mb-4">
             <h2 class="font-weight-bold">Evaluaciones Previas</h2>
