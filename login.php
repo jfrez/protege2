@@ -1,15 +1,12 @@
+<?php include_once("config.php"); ?>
+<?php include_once("header.php"); ?>
+<?php include_once("utils/password_utils.php"); ?>
 <?php
-include_once("config.php");
-include_once("utils/password_utils.php");
-
-$error = '';
-
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
         die('Invalid CSRF token');
     }
 }
-
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -23,6 +20,7 @@ if (isset($_POST['login'])) {
 
     if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
+            $error = 'ok!!';
             session_regenerate_id(true);
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
@@ -32,6 +30,7 @@ if (isset($_POST['login'])) {
 
             if (!passwordMeetsPolicy($password)) {
                 $_SESSION['must_change_password'] = 1;
+                $row['must_change_password'] = 1;
                 sqlsrv_query($conn, 'UPDATE users SET must_change_password = 1 WHERE userid = ?', [$row['userid']]);
                 $_SESSION['policy_message'] = 'Su clave no cumple con la política de complejidad. Debe cambiarla.';
             }
@@ -65,28 +64,28 @@ if (isset($_POST['login'])) {
     sqlsrv_free_stmt($stmt);
 }
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="login.css">
-</head>
+
+<link rel="stylesheet" href="login.css">
+
 <body>
-    <br>
-    <img src="/images/logo.jpg" alt="Logo UDP">
-    <div class="container">
-        <h2>PROTEGE</h2>
-        <form action="login.php" method="POST">
-            <?php csrf_input(); ?>
-            <input type="text" name="email" placeholder="Email" required>
-            <input type="password" name="password" placeholder="Contraseña" required>
-            <button type="submit" name="login">Login</button>
-        </form>
-        <?php if ($error): ?>
-            <div style="color: red;"><?= htmlspecialchars($error) ?></div>
-        <?php endif; ?>
-        <div class="switch"></div>
+
+<br>
+    <img src="/images/logo.jpg" alt="Logo UDP"> <!-- Logo de la UDP -->
+<div class="container">
+    <h2>PROTEGE</h2>
+    <form action="login.php" method="POST">
+        <?php csrf_input(); ?>
+        <input type="text" name="email" placeholder="Email" required>
+        <input type="password" name="password" placeholder="Contraseña" required>
+        <button type="submit" name="login">Login</button>
+    </form>
+    <?php if ($error): ?>
+        <div style="color: red;"><?php echo $error; ?></div>
+    <?php endif; ?>
+    <div class="switch">
     </div>
+</div>
+
 </body>
 </html>
+
