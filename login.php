@@ -1,11 +1,15 @@
-<?php include_once("config.php"); ?>
-<?php include_once("header.php"); ?>
 <?php
+include_once("config.php");
+include_once("utils/password_utils.php");
+
+$error = '';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
         die('Invalid CSRF token');
     }
 }
+
 if (isset($_POST['login'])) {
     $email = $_POST['email'];
     $password = $_POST['password'];
@@ -19,13 +23,18 @@ if (isset($_POST['login'])) {
 
     if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
-            $error = 'ok!!';
             session_regenerate_id(true);
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
             $_SESSION['role'] = $row['role'];
             $_SESSION['must_change_password'] = $row['must_change_password'];
+
+            if (!passwordMeetsPolicy($password)) {
+                $_SESSION['must_change_password'] = 1;
+                sqlsrv_query($conn, 'UPDATE users SET must_change_password = 1 WHERE userid = ?', [$row['userid']]);
+                $_SESSION['policy_message'] = 'Su clave no cumple con la política de complejidad. Debe cambiarla.';
+            }
 
             $token = bin2hex(random_bytes(16));
             $tokenHash = hash('sha256', $token);
@@ -40,7 +49,7 @@ if (isset($_POST['login'])) {
 
             $_SESSION['token'] = $token;
             $_SESSION['login_method'] = 'userpass';
-            if ($row['must_change_password']) {
+            if ($_SESSION['must_change_password']) {
                 header('Location: change_password.php');
             } else {
                 header('Location: homepage.php');
@@ -56,28 +65,28 @@ if (isset($_POST['login'])) {
     sqlsrv_free_stmt($stmt);
 }
 ?>
-
-<link rel="stylesheet" href="login.css">
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login</title>
+    <link rel="stylesheet" href="login.css">
+</head>
 <body>
-
-<br>
-    <img src="/images/logo.jpg" alt="Logo UDP"> <!-- Logo de la UDP -->
-<div class="container">
-    <h2>PROTEGE</h2>
-    <form action="login.php" method="POST">
-        <?php csrf_input(); ?>
-        <input type="text" name="email" placeholder="Email" required>
-        <input type="password" name="password" placeholder="Contraseña" required>
-        <button type="submit" name="login">Login</button>
-    </form>
-    <?php if ($error): ?>
-        <div style="color: red;"><?php echo $error; ?></div>
-    <?php endif; ?>
-    <div class="switch">
+    <br>
+    <img src="/images/logo.jpg" alt="Logo UDP">
+    <div class="container">
+        <h2>PROTEGE</h2>
+        <form action="login.php" method="POST">
+            <?php csrf_input(); ?>
+            <input type="text" name="email" placeholder="Email" required>
+            <input type="password" name="password" placeholder="Contraseña" required>
+            <button type="submit" name="login">Login</button>
+        </form>
+        <?php if ($error): ?>
+            <div style="color: red;"><?= htmlspecialchars($error) ?></div>
+        <?php endif; ?>
+        <div class="switch"></div>
     </div>
-</div>
-
 </body>
 </html>
-

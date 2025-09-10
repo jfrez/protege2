@@ -8,7 +8,13 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $message = '';
+$messageClass = 'alert-danger';
 $success = false;
+if (isset($_SESSION['policy_message'])) {
+    $message = $_SESSION['policy_message'];
+    $messageClass = 'alert-warning';
+    unset($_SESSION['policy_message']);
+}
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -23,8 +29,12 @@ if (isset($_POST['change_password'])) {
 
     if ($new !== $confirm) {
         $message = 'Las nuevas contraseñas no coinciden.';
+        $success = false;
+        $messageClass = 'alert-danger';
     } elseif (!passwordMeetsPolicy($new)) {
         $message = 'La nueva clave debe tener al menos 8 caracteres e incluir al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.';
+        $success = false;
+        $messageClass = 'alert-danger';
     } else {
         $stmt = sqlsrv_query($conn, 'SELECT password FROM users WHERE userid = ?', [$_SESSION['userid']]);
         if ($stmt && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {
@@ -35,15 +45,22 @@ if (isset($_POST['change_password'])) {
                     $_SESSION['must_change_password'] = 0;
                     $message = 'Clave actualizada correctamente.';
                     $success = true;
+                    $messageClass = 'alert-success';
                 } else {
                     $message = 'Error al actualizar la clave.';
+                    $success = false;
+                    $messageClass = 'alert-danger';
                 }
             } else {
                 $message = 'Clave actual incorrecta.';
+                $success = false;
+                $messageClass = 'alert-danger';
             }
             sqlsrv_free_stmt($stmt);
         } else {
             $message = 'Error al verificar la clave.';
+            $success = false;
+            $messageClass = 'alert-danger';
         }
     }
 }
@@ -53,7 +70,7 @@ include_once("header.php");
 <div class="container mt-4">
     <h2>Cambiar Clave</h2>
     <?php if ($message): ?>
-        <div class="alert <?= $success ? 'alert-success' : 'alert-danger' ?>"><?= htmlspecialchars($message) ?></div>
+        <div class="alert <?= $messageClass ?>"><?= htmlspecialchars($message) ?></div>
     <?php endif; ?>
     <form method="POST">
         <?php csrf_input(); ?>
@@ -72,3 +89,7 @@ include_once("header.php");
         <button type="submit" name="change_password" class="btn btn-primary">Cambiar</button>
     </form>
 </div>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

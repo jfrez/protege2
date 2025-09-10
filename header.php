@@ -48,7 +48,7 @@ if (isset($_SESSION['userid'])) {
         <span class="navbar-text mr-2" style="white-space: nowrap;">
             <?php echo htmlspecialchars($_SESSION['name']); ?>
         </span>
-        <?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+<?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <a class="nav-link" href="user_management.php" style="color: var(--udp-white);">Gestión Usuarios</a>
             <a class="nav-link" href="evaluation_report.php" style="color: var(--udp-white);">Reporte Evaluaciones</a>
         <?php endif; ?>
@@ -59,10 +59,3 @@ if (isset($_SESSION['userid'])) {
 <?php } ?>
 
 <!-- Contenido de la página -->
-
-<!-- Incluir Bootstrap JS y dependencias -->
-<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-<!-- Bootstrap JS Bundle (incluye Popper.js) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
