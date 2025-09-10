@@ -54,11 +54,19 @@ $schemaQueries = [
         " last_name NVARCHAR(100)," .
         " email NVARCHAR(255) UNIQUE NOT NULL," .
         " password NVARCHAR(255) NOT NULL," .
-        " token NVARCHAR(64)
-    ); END",
+        " token_hash NVARCHAR(64)," .
+        " token_expires_at DATETIME," .
+        " token_used BIT DEFAULT 0" .
+    "); END",
 
     // Ensure role column is available
     "IF COL_LENGTH('users', 'role') IS NULL BEGIN ALTER TABLE users ADD role NVARCHAR(20) NOT NULL DEFAULT 'user'; END",
+
+    // Ensure token columns exist and legacy token column removed
+    "IF COL_LENGTH('users', 'token_hash') IS NULL BEGIN ALTER TABLE users ADD token_hash NVARCHAR(64); END",
+    "IF COL_LENGTH('users', 'token_expires_at') IS NULL BEGIN ALTER TABLE users ADD token_expires_at DATETIME; END",
+    "IF COL_LENGTH('users', 'token_used') IS NULL BEGIN ALTER TABLE users ADD token_used BIT DEFAULT 0; END",
+    "IF COL_LENGTH('users', 'token') IS NOT NULL BEGIN ALTER TABLE users DROP COLUMN token; END",
 
     // Create people table if it doesn't exist
     "IF OBJECT_ID(N'people', N'U') IS NULL BEGIN CREATE TABLE people (" .
