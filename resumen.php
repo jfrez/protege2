@@ -112,12 +112,12 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion2.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Historia Familiar de Problemas de Salud Mental: <span id="summaryRiesgo1"><?php echo $data_seccion2['historia_salud_mental'] ?? 'N/A'; ?></span></p>
-            <p>Antecedentes de Abuso de Sustancias: <span id="summaryRiesgo2"><?php echo $data_seccion2['abuso_sustancias'] ?? 'N/A'; ?></span></p>
-            <p>Problemas de Comportamiento y de Regulación Emocional: <span id="summaryRiesgo3"><?php echo $data_seccion2['comportamiento_emocional'] ?? 'N/A'; ?></span></p>
-            <p>Baja Autoestima: <span id="summaryRiesgo4"><?php echo $data_seccion2['autoestima'] ?? 'N/A'; ?></span></p>
-            <p>Enfermedades Crónicas o Discapacidades Físicas: <span id="summaryRiesgo5"><?php echo $data_seccion2['enfermedades_cronicas'] ?? 'N/A'; ?></span></p>
-            <p>Estrés Prolongado o Traumático: <span id="summaryRiesgo6"><?php echo $data_seccion2['estres_traumatico'] ?? 'N/A'; ?></span></p>
+            <p>Historia Familiar de Problemas de Salud Mental: <span id="summaryRiesgo1"><?php echo htmlspecialchars($data_seccion2['historia_salud_mental'] ?? 'N/A'); ?></span></p>
+            <p>Antecedentes de Abuso de Sustancias: <span id="summaryRiesgo2"><?php echo htmlspecialchars($data_seccion2['abuso_sustancias'] ?? 'N/A'); ?></span></p>
+            <p>Problemas de Comportamiento y de Regulación Emocional: <span id="summaryRiesgo3"><?php echo htmlspecialchars($data_seccion2['comportamiento_emocional'] ?? 'N/A'); ?></span></p>
+            <p>Baja Autoestima: <span id="summaryRiesgo4"><?php echo htmlspecialchars($data_seccion2['autoestima'] ?? 'N/A'); ?></span></p>
+            <p>Enfermedades Crónicas o Discapacidades Físicas: <span id="summaryRiesgo5"><?php echo htmlspecialchars($data_seccion2['enfermedades_cronicas'] ?? 'N/A'); ?></span></p>
+            <p>Estrés Prolongado o Traumático: <span id="summaryRiesgo6"><?php echo htmlspecialchars($data_seccion2['estres_traumatico'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores Familiares -->
@@ -126,11 +126,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion3.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Conflictos Familiares y Violencia Doméstica: <span id="summaryRiesgo7"><?php echo $data_seccion3['conflictos_familiares'] ?? 'N/A'; ?></span></p>
-            <p>Falta de Apoyo Emocional y Supervisión: <span id="summaryRiesgo8"><?php echo $data_seccion3['falta_apoyo_emocional'] ?? 'N/A'; ?></span></p>
-            <p>Abuso Físico, Emocional o Sexual: <span id="summaryRiesgo9"><?php echo $data_seccion3['abuso_fisico_emocional'] ?? 'N/A'; ?></span></p>
-            <p>Pérdida de uno o ambos Padres: <span id="summaryRiesgo10"><?php echo $data_seccion3['perdida_padres'] ?? 'N/A'; ?></span></p>
-            <p>Padres con Problemas de Salud Mental o Abuso de Sustancias: <span id="summaryRiesgo11"><?php echo $data_seccion3['padres_salud_mental'] ?? 'N/A'; ?></span></p>
+            <p>Conflictos Familiares y Violencia Doméstica: <span id="summaryRiesgo7"><?php echo htmlspecialchars($data_seccion3['conflictos_familiares'] ?? 'N/A'); ?></span></p>
+            <p>Falta de Apoyo Emocional y Supervisión: <span id="summaryRiesgo8"><?php echo htmlspecialchars($data_seccion3['falta_apoyo_emocional'] ?? 'N/A'); ?></span></p>
+            <p>Abuso Físico, Emocional o Sexual: <span id="summaryRiesgo9"><?php echo htmlspecialchars($data_seccion3['abuso_fisico_emocional'] ?? 'N/A'); ?></span></p>
+            <p>Pérdida de uno o ambos Padres: <span id="summaryRiesgo10"><?php echo htmlspecialchars($data_seccion3['perdida_padres'] ?? 'N/A'); ?></span></p>
+            <p>Padres con Problemas de Salud Mental o Abuso de Sustancias: <span id="summaryRiesgo11"><?php echo htmlspecialchars($data_seccion3['padres_salud_mental'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores Sociales -->
@@ -139,11 +139,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion4.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Exclusión Social y Falta de Redes de Apoyo: <span id="summaryRiesgo12"><?php echo $data_seccion4['exclusion_social'] ?? 'N/A'; ?></span></p>
-            <p>Pobreza y Dificultades Económicas: <span id="summaryRiesgo13"><?php echo $data_seccion4['pobreza_dificultades'] ?? 'N/A'; ?></span></p>
-            <p>Experiencias de Discriminación y Estigmatización: <span id="summaryRiesgo14"><?php echo $data_seccion4['discriminacion'] ?? 'N/A'; ?></span></p>
-            <p>Influencias Negativas de Pares y Amigos: <span id="summaryRiesgo15"><?php echo $data_seccion4['influencias_negativas'] ?? 'N/A'; ?></span></p>
-            <p>Ambientes Escolares Poco Seguros o Violentos: <span id="summaryRiesgo16"><?php echo $data_seccion4['ambientes_escolares'] ?? 'N/A'; ?></span></p>
+            <p>Exclusión Social y Falta de Redes de Apoyo: <span id="summaryRiesgo12"><?php echo htmlspecialchars($data_seccion4['exclusion_social'] ?? 'N/A'); ?></span></p>
+            <p>Pobreza y Dificultades Económicas: <span id="summaryRiesgo13"><?php echo htmlspecialchars($data_seccion4['pobreza_dificultades'] ?? 'N/A'); ?></span></p>
+            <p>Experiencias de Discriminación y Estigmatización: <span id="summaryRiesgo14"><?php echo htmlspecialchars($data_seccion4['discriminacion'] ?? 'N/A'); ?></span></p>
+            <p>Influencias Negativas de Pares y Amigos: <span id="summaryRiesgo15"><?php echo htmlspecialchars($data_seccion4['influencias_negativas'] ?? 'N/A'); ?></span></p>
+            <p>Ambientes Escolares Poco Seguros o Violentos: <span id="summaryRiesgo16"><?php echo htmlspecialchars($data_seccion4['ambientes_escolares'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores Ambientales -->
@@ -152,10 +152,10 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion5.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Vivienda Inadecuada o Condiciones de Vida Peligrosas: <span id="summaryRiesgo17"><?php echo $data_seccion5['vivienda_inadecuada'] ?? 'N/A'; ?></span></p>
-            <p>Acceso Limitado a Servicios de Salud y Educación: <span id="summaryRiesgo18"><?php echo $data_seccion5['acceso_servicios'] ?? 'N/A'; ?></span></p>
-            <p>Desastres Naturales y Crisis Humanitarias: <span id="summaryRiesgo19"><?php echo $data_seccion5['desastres_crisis'] ?? 'N/A'; ?></span></p>
-            <p>Exposición a Violencia Comunitaria: <span id="summaryRiesgo20"><?php echo $data_seccion5['violencia_comunitaria'] ?? 'N/A'; ?></span></p>
+            <p>Vivienda Inadecuada o Condiciones de Vida Peligrosas: <span id="summaryRiesgo17"><?php echo htmlspecialchars($data_seccion5['vivienda_inadecuada'] ?? 'N/A'); ?></span></p>
+            <p>Acceso Limitado a Servicios de Salud y Educación: <span id="summaryRiesgo18"><?php echo htmlspecialchars($data_seccion5['acceso_servicios'] ?? 'N/A'); ?></span></p>
+            <p>Desastres Naturales y Crisis Humanitarias: <span id="summaryRiesgo19"><?php echo htmlspecialchars($data_seccion5['desastres_crisis'] ?? 'N/A'); ?></span></p>
+            <p>Exposición a Violencia Comunitaria: <span id="summaryRiesgo20"><?php echo htmlspecialchars($data_seccion5['violencia_comunitaria'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores de Protección Personales -->
@@ -164,11 +164,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion6.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Buena Salud Física y Mental: <span id="summaryRiesgo21"><?php echo $data_seccion6['buena_salud'] ?? 'N/A'; ?></span></p>
-            <p>Habilidades de Afrontamiento y Manejo del Estrés: <span id="summaryRiesgo22"><?php echo $data_seccion6['habilidades_afrontamiento'] ?? 'N/A'; ?></span></p>
-            <p>Alta Autoestima y Autoconfianza: <span id="summaryRiesgo23"><?php echo $data_seccion6['autoestima_alta'] ?? 'N/A'; ?></span></p>
-            <p>Buen Rendimiento Académico y Habilidades Cognitivas: <span id="summaryRiesgo24"><?php echo $data_seccion6['rendimiento_academico'] ?? 'N/A'; ?></span></p>
-            <p>Participación en Actividades Recreativas y Deportivas: <span id="summaryRiesgo25"><?php echo $data_seccion6['participacion_actividades'] ?? 'N/A'; ?></span></p>
+            <p>Buena Salud Física y Mental: <span id="summaryRiesgo21"><?php echo htmlspecialchars($data_seccion6['buena_salud'] ?? 'N/A'); ?></span></p>
+            <p>Habilidades de Afrontamiento y Manejo del Estrés: <span id="summaryRiesgo22"><?php echo htmlspecialchars($data_seccion6['habilidades_afrontamiento'] ?? 'N/A'); ?></span></p>
+            <p>Alta Autoestima y Autoconfianza: <span id="summaryRiesgo23"><?php echo htmlspecialchars($data_seccion6['autoestima_alta'] ?? 'N/A'); ?></span></p>
+            <p>Buen Rendimiento Académico y Habilidades Cognitivas: <span id="summaryRiesgo24"><?php echo htmlspecialchars($data_seccion6['rendimiento_academico'] ?? 'N/A'); ?></span></p>
+            <p>Participación en Actividades Recreativas y Deportivas: <span id="summaryRiesgo25"><?php echo htmlspecialchars($data_seccion6['participacion_actividades'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores de Protección Familiares -->
@@ -177,11 +177,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion7.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Relaciones Familiares Cálidas y de Apoyo: <span id="summaryRiesgo26"><?php echo $data_seccion7['relaciones_familiares'] ?? 'N/A'; ?></span></p>
-            <p>Supervisión y Guía Adecuada por Parte de los Padres: <span id="summaryRiesgo27"><?php echo $data_seccion7['supervision_padres'] ?? 'N/A'; ?></span></p>
-            <p>Comunicación Abierta y Efectiva en la Familia: <span id="summaryRiesgo28"><?php echo $data_seccion7['comunicacion_familiar'] ?? 'N/A'; ?></span></p>
-            <p>Presencia de al Menos un Adulto Significativo y de Confianza: <span id="summaryRiesgo29"><?php echo $data_seccion7['adulto_significativo'] ?? 'N/A'; ?></span></p>
-            <p>Prácticas de Crianza Positivas y Consistentes: <span id="summaryRiesgo30"><?php echo $data_seccion7['practicas_crianza'] ?? 'N/A'; ?></span></p>
+            <p>Relaciones Familiares Cálidas y de Apoyo: <span id="summaryRiesgo26"><?php echo htmlspecialchars($data_seccion7['relaciones_familiares'] ?? 'N/A'); ?></span></p>
+            <p>Supervisión y Guía Adecuada por Parte de los Padres: <span id="summaryRiesgo27"><?php echo htmlspecialchars($data_seccion7['supervision_padres'] ?? 'N/A'); ?></span></p>
+            <p>Comunicación Abierta y Efectiva en la Familia: <span id="summaryRiesgo28"><?php echo htmlspecialchars($data_seccion7['comunicacion_familiar'] ?? 'N/A'); ?></span></p>
+            <p>Presencia de al Menos un Adulto Significativo y de Confianza: <span id="summaryRiesgo29"><?php echo htmlspecialchars($data_seccion7['adulto_significativo'] ?? 'N/A'); ?></span></p>
+            <p>Prácticas de Crianza Positivas y Consistentes: <span id="summaryRiesgo30"><?php echo htmlspecialchars($data_seccion7['practicas_crianza'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores de Protección Sociales -->
@@ -190,11 +190,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion8.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Redes de Apoyo Social Sólidas (Amigos, Comunidad): <span id="summaryRiesgo31"><?php echo $data_seccion8['redes_apoyo_social'] ?? 'N/A'; ?></span></p>
-            <p>Participación en Grupos y Actividades Comunitarias: <span id="summaryRiesgo32"><?php echo $data_seccion8['participacion_comunitaria'] ?? 'N/A'; ?></span></p>
-            <p>Ambiente Escolar Seguro y de Apoyo: <span id="summaryRiesgo33"><?php echo $data_seccion8['ambiente_escolar'] ?? 'N/A'; ?></span></p>
-            <p>Acceso a Servicios de Salud Mental y Otros Recursos: <span id="summaryRiesgo34"><?php echo $data_seccion8['acceso_salud_mental'] ?? 'N/A'; ?></span></p>
-            <p>Experiencias de Éxito y Reconocimiento Social: <span id="summaryRiesgo35"><?php echo $data_seccion8['experiencias_exito'] ?? 'N/A'; ?></span></p>
+            <p>Redes de Apoyo Social Sólidas (Amigos, Comunidad): <span id="summaryRiesgo31"><?php echo htmlspecialchars($data_seccion8['redes_apoyo_social'] ?? 'N/A'); ?></span></p>
+            <p>Participación en Grupos y Actividades Comunitarias: <span id="summaryRiesgo32"><?php echo htmlspecialchars($data_seccion8['participacion_comunitaria'] ?? 'N/A'); ?></span></p>
+            <p>Ambiente Escolar Seguro y de Apoyo: <span id="summaryRiesgo33"><?php echo htmlspecialchars($data_seccion8['ambiente_escolar'] ?? 'N/A'); ?></span></p>
+            <p>Acceso a Servicios de Salud Mental y Otros Recursos: <span id="summaryRiesgo34"><?php echo htmlspecialchars($data_seccion8['acceso_salud_mental'] ?? 'N/A'); ?></span></p>
+            <p>Experiencias de Éxito y Reconocimiento Social: <span id="summaryRiesgo35"><?php echo htmlspecialchars($data_seccion8['experiencias_exito'] ?? 'N/A'); ?></span></p>
         </div>
 
         <!-- Sección de Factores de Protección Ambientales -->
@@ -203,11 +203,11 @@ $conn->close();
             <!-- Botón para editar la sección -->
             <a href="seccion9.php" class="btn btn-sm btn-warning edit-button">Editar</a>
 
-            <p>Entorno Físico Seguro y Saludable: <span id="summaryRiesgo36"><?php echo $data_seccion8['entorno_fisico'] ?? 'N/A'; ?></span></p>
-            <p>Políticas y Programas Comunitarios de Apoyo: <span id="summaryRiesgo37"><?php echo $data_seccion8['politicas_programas'] ?? 'N/A'; ?></span></p>
-            <p>Acceso a Educación de Calidad y Oportunidades de Empleo: <span id="summaryRiesgo38"><?php echo $data_seccion8['acceso_educacion'] ?? 'N/A'; ?></span></p>
-            <p>Servicios de Salud Accesibles y de Buena Calidad: <span id="summaryRiesgo39"><?php echo $data_seccion8['servicios_salud'] ?? 'N/A'; ?></span></p>
-            <p>Programas de Prevención y Promoción de la Salud: <span id="summaryRiesgo40"><?php echo $data_seccion8['programas_prevencion'] ?? 'N/A'; ?></span></p>
+            <p>Entorno Físico Seguro y Saludable: <span id="summaryRiesgo36"><?php echo htmlspecialchars($data_seccion8['entorno_fisico'] ?? 'N/A'); ?></span></p>
+            <p>Políticas y Programas Comunitarios de Apoyo: <span id="summaryRiesgo37"><?php echo htmlspecialchars($data_seccion8['politicas_programas'] ?? 'N/A'); ?></span></p>
+            <p>Acceso a Educación de Calidad y Oportunidades de Empleo: <span id="summaryRiesgo38"><?php echo htmlspecialchars($data_seccion8['acceso_educacion'] ?? 'N/A'); ?></span></p>
+            <p>Servicios de Salud Accesibles y de Buena Calidad: <span id="summaryRiesgo39"><?php echo htmlspecialchars($data_seccion8['servicios_salud'] ?? 'N/A'); ?></span></p>
+            <p>Programas de Prevención y Promoción de la Salud: <span id="summaryRiesgo40"><?php echo htmlspecialchars($data_seccion8['programas_prevencion'] ?? 'N/A'); ?></span></p>
         </div>
     </div>
     <a href="seccion8.php" class="btn btn-secondary">Anterior</a>
