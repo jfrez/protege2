@@ -226,7 +226,7 @@ sqlsrv_close($conn);
     <div class="card mb-4">
         <div class="card-header d-flex justify-content-between align-items-start">
             <div>
-                <strong><?php echo $data['label']; ?></strong>
+                <strong><?php echo htmlspecialchars($data['label']); ?></strong>
             </div>
             <button type="button" 
                     class="btn btn-info btn-sm" 
