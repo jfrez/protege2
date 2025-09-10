@@ -10,6 +10,7 @@ if (isset($_GET['token']) && $_GET['token'] !== '') {
         die(print_r(sqlsrv_errors(), true));
     }
     if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+        session_regenerate_id(true);
         $_SESSION['userid'] = $row['userid'];
         $_SESSION['email'] = $row['email'];
         $_SESSION['name'] = $row['name'];

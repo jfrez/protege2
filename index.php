@@ -26,6 +26,7 @@ if (isset($_POST['login'])) {
     if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         if (password_verify($password, $row['password'])) {
             // Login exitoso
+            session_regenerate_id(true);
             $_SESSION['userid'] = $row['userid'];
             $_SESSION['email'] = $row['email'];
             $_SESSION['name'] = $row['name'];
