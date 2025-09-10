@@ -24,7 +24,7 @@ if (isset($_POST['change_password'])) {
     if ($new !== $confirm) {
         $message = 'Las nuevas contraseñas no coinciden.';
     } elseif (!passwordMeetsPolicy($new)) {
-        $message = 'La nueva clave debe tener al menos 16 caracteres e incluir al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.';
+        $message = 'La nueva clave debe tener al menos 8 caracteres e incluir al menos una letra minúscula, una letra mayúscula, un número y un carácter especial.';
     } else {
         $stmt = sqlsrv_query($conn, 'SELECT password FROM users WHERE userid = ?', [$_SESSION['userid']]);
         if ($stmt && ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC))) {

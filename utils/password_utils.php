@@ -1,6 +1,6 @@
 <?php
 function passwordMeetsPolicy(string $password): bool {
-    if (strlen($password) < 16) {
+    if (strlen($password) < 8) {
         return false;
     }
     if (!preg_match('/[a-z]/', $password)) {
@@ -18,8 +18,8 @@ function passwordMeetsPolicy(string $password): bool {
     return true;
 }
 
-function generateSecurePassword(int $length = 16): string {
-    $length = max(16, $length);
+function generateSecurePassword(int $length = 8): string {
+    $length = max(8, $length);
     $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+';
     $charLen = strlen($chars);
     do {
