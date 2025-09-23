@@ -9,19 +9,23 @@ include_once("header.php");
 $errors = [];
 
 // Obtener datos existentes si hay un 'inserted_id' en la sesión
-$existing_data = array();
+$existing_data = [];
+$hasExistingEvaluation = false;
 
-if (isset($_SESSION['inserted_id']) && $_SESSION['inserted_id'] != '') {
-    $evaluacion_id = $_SESSION['inserted_id'];
+if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+    $evaluacion_id = (int) $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
     $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
     $params = [$evaluacion_id];
     $stmt = sqlsrv_query($conn, $query, $params);
-    if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-        $existing_data = $row;
-    }
     if ($stmt !== false) {
+        if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $existing_data = $row;
+            $hasExistingEvaluation = true;
+        } else {
+            unset($_SESSION['inserted_id']);
+        }
         sqlsrv_free_stmt($stmt);
     }
 }
@@ -207,9 +211,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Si no hay errores, proceder con la inserción o actualización
     if (empty($errors)) {
-        if (isset($_SESSION['inserted_id']) && $_SESSION['inserted_id'] != '') {
+        if ($hasExistingEvaluation) {
             // Actualizar registro existente
-            $evaluacion_id = $_SESSION['inserted_id'];
+            $evaluacion_id = (int) $_SESSION['inserted_id'];
 
             $query = "UPDATE dbo.evaluacion SET
                         nombre = ?,

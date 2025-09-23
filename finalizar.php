@@ -8,7 +8,7 @@ if (!isset($_SESSION['inserted_id'])) {
     exit;
 }
 
-$evaluacion_id = $_SESSION['inserted_id'];
+$evaluacion_id = (int) $_SESSION['inserted_id'];
 
 // Aquí puedes agregar cualquier lógica adicional que necesites, como cálculos finales
 
@@ -48,6 +48,13 @@ function calcular_puntaje_total($conn, $evaluacion_id) {
 
 // Calcular el puntaje total
 $total_puntaje = calcular_puntaje_total($conn, $evaluacion_id);
+
+// Limpiar el estado de la sesión utilizado durante el flujo de evaluación
+unset($_SESSION['inserted_id']);
+unset($_SESSION['token']);
+if (isset($_SESSION['form_data'])) {
+    unset($_SESSION['form_data']);
+}
 
 
 
