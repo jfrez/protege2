@@ -219,18 +219,35 @@ foreach ($schemaQueries as $query) {
 
 $adminEmail = 'admin@example.com';
 $adminPassword = password_hash('adminadmin', PASSWORD_BCRYPT);
+$resetAdminPassword = filter_var(getenv('RESET_ADMIN_PASSWORD') ?: false, FILTER_VALIDATE_BOOLEAN);
 
-$checkStmt = sqlsrv_query($conn, "SELECT userid FROM users WHERE email = ?", [$adminEmail]);
+$checkStmt = sqlsrv_query($conn, "SELECT userid, role FROM users WHERE email = ?", [$adminEmail]);
 if ($checkStmt === false) {
     die(print_r(sqlsrv_errors(), true));
 }
 
 if ($row = sqlsrv_fetch_array($checkStmt, SQLSRV_FETCH_ASSOC)) {
-    $updateStmt = sqlsrv_query($conn, "UPDATE users SET password = ?, role = 'admin' WHERE userid = ?", [$adminPassword, $row['userid']]);
-    if ($updateStmt === false) {
-        die(print_r(sqlsrv_errors(), true));
+    if ($resetAdminPassword) {
+        $updateStmt = sqlsrv_query(
+            $conn,
+            "UPDATE users SET password = ?, role = 'admin' WHERE userid = ?",
+            [$adminPassword, $row['userid']]
+        );
+        if ($updateStmt === false) {
+            die(print_r(sqlsrv_errors(), true));
+        }
+        sqlsrv_free_stmt($updateStmt);
+    } elseif ($row['role'] !== 'admin') {
+        $updateRoleStmt = sqlsrv_query(
+            $conn,
+            "UPDATE users SET role = 'admin' WHERE userid = ?",
+            [$row['userid']]
+        );
+        if ($updateRoleStmt === false) {
+            die(print_r(sqlsrv_errors(), true));
+        }
+        sqlsrv_free_stmt($updateRoleStmt);
     }
-    sqlsrv_free_stmt($updateStmt);
 } else {
     $insertStmt = sqlsrv_query($conn, "INSERT INTO users (name, last_name, email, password, role) VALUES (?, ?, ?, ?, 'admin')", ['Admin', 'User', $adminEmail, $adminPassword]);
     if ($insertStmt === false) {
