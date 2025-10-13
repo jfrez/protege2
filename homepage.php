@@ -35,7 +35,11 @@ if ($colCheckStmt && !sqlsrv_fetch_array($colCheckStmt, SQLSRV_FETCH_ASSOC)) {
 // Consultar evaluaciones; para administradores, mostrar todas
 if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $query = "
-        SELECT e.*, e.evaluador AS evaluador_nombre
+        SELECT e.*,
+               LTRIM(RTRIM(CASE
+                   WHEN u.name IS NULL AND u.last_name IS NULL THEN e.evaluador
+                   ELSE CONCAT(COALESCE(u.name, ''), ' ', COALESCE(u.last_name, ''))
+               END)) AS evaluador_nombre
         FROM evaluacion e
         JOIN users u ON e.user_id = u.userid
     ";
@@ -43,7 +47,11 @@ if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
     $stmt = sqlsrv_query($conn, $query);
 } else {
     $query = "
-        SELECT e.*, e.evaluador AS evaluador_nombre
+        SELECT e.*,
+               LTRIM(RTRIM(CASE
+                   WHEN u.name IS NULL AND u.last_name IS NULL THEN e.evaluador
+                   ELSE CONCAT(COALESCE(u.name, ''), ' ', COALESCE(u.last_name, ''))
+               END)) AS evaluador_nombre
         FROM evaluacion e
         JOIN users u ON e.user_id = u.userid
         WHERE e.user_id = ?
@@ -56,6 +64,9 @@ if ($stmt === false) {
 }
 $evaluaciones = [];
 while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+    if (isset($row['fecha_evaluacion']) && $row['fecha_evaluacion'] instanceof DateTime) {
+        $row['fecha_evaluacion'] = $row['fecha_evaluacion']->format('d-m-Y');
+    }
     $evaluaciones[] = $row;
 }
 sqlsrv_free_stmt($stmt);
