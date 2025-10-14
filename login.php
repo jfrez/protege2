@@ -71,6 +71,14 @@ if (isset($_POST['login'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="stylesheet" href="login.css">
+    <style>
+        .login-footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: #58595B;
+            font-size: 0.9rem;
+        }
+    </style>
 </head>
 <body>
 <br>
@@ -88,5 +96,6 @@ if (isset($_POST['login'])) {
     <?php endif; ?>
     <div class="switch"></div>
 </div>
+<footer class="login-footer">Versión <?php echo htmlspecialchars(APP_VERSION); ?></footer>
 </body>
 </html>
