@@ -3,6 +3,10 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
+if (!defined('APP_VERSION')) {
+    define('APP_VERSION', '1.0.1');
+}
+
 // CSRF token handling
 if (empty($_SESSION['csrf'])) {
     $_SESSION['csrf'] = bin2hex(random_bytes(32));

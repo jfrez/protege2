@@ -88,9 +88,19 @@ body {
     position: absolute;
     top:0;
     left: 50%;
-    height: 100vh; 
+    height: 100vh;
     width: 50%;
     background: linear-gradient(to right, rgba(255,255,255,1), rgba(0,0,0,0)),
                 url('familia.png') center center no-repeat;
     background-size: cover;
+}
+
+.page-footer {
+    position: fixed;
+    bottom: 1rem;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    color: #58595B;
+    font-size: 0.9rem;
 }

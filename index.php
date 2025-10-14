@@ -162,6 +162,8 @@ include_once("header.php");
 </div>
 </div>
 
+<footer class="page-footer">Versión <?php echo htmlspecialchars(APP_VERSION); ?></footer>
+
 </body>
 </html>
 
