@@ -18,8 +18,42 @@ $errors = [];
 // Obtener datos existentes si hay un 'inserted_id' en la sesión
 $existing_data = [];
 $hasExistingEvaluation = false;
+$evaluacion_id = null;
 
-if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+// Permitir cargar una evaluación existente directamente mediante parámetro GET
+if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
+    $requestedId = (int) $_GET['evaluacion_id'];
+    $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
+    $stmt = sqlsrv_query($conn, $query, [$requestedId]);
+    if ($stmt !== false) {
+        if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $userId = $_SESSION['userid'] ?? null;
+            $canAccess = in_array($role, ['admin', 'supervisor'], true);
+            if (!$canAccess && $userId !== null && isset($row['user_id'])) {
+                $canAccess = ((int) $row['user_id']) === ((int) $userId);
+            }
+
+            if ($canAccess) {
+                $_SESSION['inserted_id'] = $requestedId;
+                $existing_data = $row;
+                $hasExistingEvaluation = true;
+                $evaluacion_id = $requestedId;
+            } else {
+                $errors['general'] = "No tienes permiso para acceder a esta evaluación.";
+                unset($_SESSION['inserted_id']);
+            }
+        } else {
+            $errors['general'] = "No se encontró la evaluación solicitada.";
+            unset($_SESSION['inserted_id']);
+        }
+        sqlsrv_free_stmt($stmt);
+    } else {
+        $errors['general'] = "Error al buscar la evaluación: " . print_r(sqlsrv_errors(), true);
+        unset($_SESSION['inserted_id']);
+    }
+}
+
+if (!$hasExistingEvaluation && isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
     $evaluacion_id = (int) $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
@@ -291,7 +325,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Ensure the evaluation id remains in session for subsequent sections
                 $_SESSION['inserted_id'] = $evaluacion_id;
                 sqlsrv_free_stmt($stmt);
-                header('Location: seccion2b.php');
+                $redirectUrl = 'seccion2b.php';
+                if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+                    $redirectUrl .= '?evaluacion_id=' . (int) $_SESSION['inserted_id'];
+                }
+                header('Location: ' . $redirectUrl);
                 // Discard any buffered output before redirecting
                 ob_end_clean();
                 exit();
@@ -341,8 +379,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = sqlsrv_query($conn, $query, $params);
             if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $_SESSION['inserted_id'] = (int)$row['id'];
+                $evaluacion_id = (int)$row['id'];
                 sqlsrv_free_stmt($stmt);
-                header('Location: seccion2b.php');
+                $redirectUrl = 'seccion2b.php';
+                if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+                    $redirectUrl .= '?evaluacion_id=' . (int) $_SESSION['inserted_id'];
+                }
+                header('Location: ' . $redirectUrl);
                 // Discard any buffered output before redirecting
                 ob_end_clean();
                 exit();

@@ -1,12 +1,17 @@
 <?php include_once("config.php"); ?>
 <?php include_once("header.php"); ?>
 <?php
+if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
+    $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
+}
+
 if (!isset($_SESSION['inserted_id'])) {
     echo "Error: No hay un ID de evaluación vinculado.";
     exit;
 }
 
-$evaluacion_id = $_SESSION['inserted_id'];
+$evaluacion_id = isset($_SESSION['inserted_id']) ? (int) $_SESSION['inserted_id'] : null;
+$evaluacionIdQuery = $evaluacion_id !== null ? '?evaluacion_id=' . $evaluacion_id : '';
 
 // Recuperar los valores existentes si ya hay un registro
 $query = "SELECT * FROM seccion6 WHERE evaluacion_id = ?";
@@ -31,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("iiiiii", $relaciones_familiares, $supervision_padres, $comunicacion_familiar, $adulto_significativo, $practicas_crianza, $evaluacion_id);
         if ($stmt->execute()) {
             echo "Datos de la sección 6 actualizados exitosamente.";
-            header('Location: seccion7.php');
+            header('Location: seccion7.php' . $evaluacionIdQuery);
         } else {
             echo "Error al actualizar los datos de la sección 6: " . $stmt->error;
         }
@@ -43,7 +48,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stmt->bind_param("iiiiii", $evaluacion_id, $relaciones_familiares, $supervision_padres, $comunicacion_familiar, $adulto_significativo, $practicas_crianza);
         if ($stmt->execute()) {
             echo "Datos de la sección 6 guardados exitosamente.";
-            header('Location: seccion7.php');
+            header('Location: seccion7.php' . $evaluacionIdQuery);
 
         } else {
             echo "Error al guardar los datos de la sección 6: " . $stmt->error;
@@ -56,7 +61,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 <div class="container mt-5">
     <h3>Factores Protección Familiares</h3>
-    <form method="POST" action="seccion6.php">
+    <form method="POST" action="seccion6.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
         <div class="accordion" id="accordionExampleProteccionFamiliares">
             <!-- Card 1 -->
             <div class="card">
@@ -115,8 +120,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Guardar y Continuar</button>
-        <a type="button" class="btn btn-secondary mt-3" href="seccion5.php">Anterior</a>
-        <a href="resumen.php" class="btn btn-secondary mt-3">Ir al resumen</a>
+        <a type="button" class="btn btn-secondary mt-3" href="seccion5.php<?= htmlspecialchars($evaluacionIdQuery); ?>">Anterior</a>
+        <a href="resumen.php<?= htmlspecialchars($evaluacionIdQuery); ?>" class="btn btn-secondary mt-3">Ir al resumen</a>
     </form>
 </div>
 <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
