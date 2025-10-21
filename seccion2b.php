@@ -5,6 +5,10 @@ ob_start();
 include_once("config.php");
 include_once("header.php");
 
+if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
+    $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
+}
+
 // Verificar si hay una evaluación en curso o recuperar la más reciente del usuario
 if (!isset($_SESSION['inserted_id'])) {
     $userid = $_SESSION['userid'] ?? null;
@@ -30,7 +34,8 @@ if (!isset($_SESSION['inserted_id'])) {
     }
 }
 
-$evaluacion_id = $_SESSION['inserted_id'];
+$evaluacion_id = isset($_SESSION['inserted_id']) ? (int) $_SESSION['inserted_id'] : null;
+$evaluacionIdQuery = $evaluacion_id !== null ? '?evaluacion_id=' . $evaluacion_id : '';
 
 // Mostrar el ID de la evaluación para debug (opcional)
 // echo $evaluacion_id;
@@ -197,7 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt !== false) {
             sqlsrv_free_stmt($stmt);
             // Redirigir a la siguiente sección
-            header("Location: seccion3b.php");
+            header('Location: seccion3b.php' . $evaluacionIdQuery);
             ob_end_clean();
             exit();
         } else {
@@ -219,7 +224,7 @@ sqlsrv_close($conn);
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="seccion2b.php">
+    <form method="POST" action="seccion2b.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
       
 
 <?php foreach ($factores as $campo => $data): ?>
@@ -284,8 +289,8 @@ sqlsrv_close($conn);
     </div>
 <?php endforeach; ?>
 
-	      <div class="d-flex justify-content-between">
-            <a href="seccion1.php" class="btn btn-secondary">Anterior</a>
+              <div class="d-flex justify-content-between">
+            <a href="seccion1.php<?= htmlspecialchars($evaluacionIdQuery); ?>" class="btn btn-secondary">Anterior</a>
             <button type="submit" class="btn btn-primary">Siguiente</button>
         </div>
     </form>

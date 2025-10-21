@@ -5,6 +5,10 @@ ob_start();
 include_once("config.php");
 include_once("header.php");
 
+if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
+    $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
+}
+
 // Verificar si hay una evaluación en curso o recuperar la más reciente del usuario
 if (!isset($_SESSION['inserted_id'])) {
     $userid = $_SESSION['userid'] ?? null;
@@ -27,7 +31,8 @@ if (!isset($_SESSION['inserted_id'])) {
         exit();
     }
 }
-$evaluacion_id = $_SESSION['inserted_id'];
+$evaluacion_id = isset($_SESSION['inserted_id']) ? (int) $_SESSION['inserted_id'] : null;
+$evaluacionIdQuery = $evaluacion_id !== null ? '?evaluacion_id=' . $evaluacion_id : '';
 
 // Inicializar variables para almacenar mensajes de error
 $errors = [];
@@ -93,7 +98,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         if ($stmt !== false) {
             sqlsrv_free_stmt($stmt);
             // Redirigir al resumen o siguiente sección
-            header("Location: resumenb.php");
+            header('Location: resumenb.php' . $evaluacionIdQuery);
             ob_end_clean();
             exit();
         } else {
@@ -172,7 +177,7 @@ $factores = [
         </div>
     <?php endif; ?>
 
-    <form method="POST" action="seccion4b.php">
+    <form method="POST" action="seccion4b.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
         <?php foreach ($factores as $campo => $data): ?>
             <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-start">
@@ -238,7 +243,7 @@ $factores = [
         <?php endforeach; ?>
 
         <div class="d-flex justify-content-between">
-            <a href="seccion3b.php" class="btn btn-secondary">Anterior</a>
+            <a href="seccion3b.php<?= htmlspecialchars($evaluacionIdQuery); ?>" class="btn btn-secondary">Anterior</a>
             <button type="submit" class="btn btn-primary">Siguiente</button>
         </div>
     </form>

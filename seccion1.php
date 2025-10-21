@@ -18,6 +18,7 @@ $errors = [];
 // Obtener datos existentes si hay un 'inserted_id' en la sesión
 $existing_data = [];
 $hasExistingEvaluation = false;
+$evaluacion_id = null;
 
 // Permitir cargar una evaluación existente directamente mediante parámetro GET
 if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
@@ -36,6 +37,7 @@ if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
                 $_SESSION['inserted_id'] = $requestedId;
                 $existing_data = $row;
                 $hasExistingEvaluation = true;
+                $evaluacion_id = $requestedId;
             } else {
                 $errors['general'] = "No tienes permiso para acceder a esta evaluación.";
                 unset($_SESSION['inserted_id']);
@@ -323,7 +325,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 // Ensure the evaluation id remains in session for subsequent sections
                 $_SESSION['inserted_id'] = $evaluacion_id;
                 sqlsrv_free_stmt($stmt);
-                header('Location: seccion2b.php');
+                $redirectUrl = 'seccion2b.php';
+                if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+                    $redirectUrl .= '?evaluacion_id=' . (int) $_SESSION['inserted_id'];
+                }
+                header('Location: ' . $redirectUrl);
                 // Discard any buffered output before redirecting
                 ob_end_clean();
                 exit();
@@ -373,8 +379,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt = sqlsrv_query($conn, $query, $params);
             if ($stmt !== false && $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
                 $_SESSION['inserted_id'] = (int)$row['id'];
+                $evaluacion_id = (int)$row['id'];
                 sqlsrv_free_stmt($stmt);
-                header('Location: seccion2b.php');
+                $redirectUrl = 'seccion2b.php';
+                if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+                    $redirectUrl .= '?evaluacion_id=' . (int) $_SESSION['inserted_id'];
+                }
+                header('Location: ' . $redirectUrl);
                 // Discard any buffered output before redirecting
                 ob_end_clean();
                 exit();
