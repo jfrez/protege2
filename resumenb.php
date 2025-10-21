@@ -7,7 +7,12 @@ include_once("header.php");
 
 // Posible cambio o carga de evaluación actual mediante GET
 if (isset($_GET['evaluacion_id'])) {
-    $_SESSION['inserted_id'] = $_GET['evaluacion_id'];
+    if (is_numeric($_GET['evaluacion_id'])) {
+        $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
+    } else {
+        echo "Error: Identificador de evaluación inválido.";
+        exit();
+    }
 }
 
 // Verificar que exista una evaluación en curso
