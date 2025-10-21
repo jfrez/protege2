@@ -42,12 +42,16 @@ if (!function_exists('anonymize_sensitive_fields')) {
 }
 
 if (!function_exists('build_supervisor_display')) {
-    function build_supervisor_display(array $row): array
+    function build_supervisor_display(array $row, ?string $originalEvaluatorName = null): array
     {
         $row['display_name'] = 'Caso #' . str_pad((string) ($row['id'] ?? '0'), 4, '0', STR_PAD_LEFT);
         $row['display_rut'] = hash_identifier($row['rut'] ?? '');
         $row['display_cod_nino'] = hash_identifier($row['cod_nino'] ?? '');
-        $row['display_evaluador'] = 'Equipo Evaluador';
+        $evaluadorName = $originalEvaluatorName;
+        if ($evaluadorName === null || trim($evaluadorName) === '') {
+            $evaluadorName = $row['evaluador_nombre'] ?? ($row['evaluador'] ?? '');
+        }
+        $row['display_evaluador'] = trim((string) $evaluadorName) !== '' ? trim((string) $evaluadorName) : 'Equipo Evaluador';
         $row['can_view_details'] = false;
 
         return $row;
