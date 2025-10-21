@@ -1,5 +1,12 @@
 <?php
 session_start();
+
+$role = $_SESSION['role'] ?? 'user';
+if ($role === 'supervisor') {
+    header('Location: homepage.php');
+    exit;
+}
+
 // Buffer output so headers can be sent later
 ob_start();
 include_once("config.php");

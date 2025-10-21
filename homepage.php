@@ -2,6 +2,7 @@
 session_start();
 include_once("config.php");
 include_once("header.php");
+include_once("utils/anonymization.php");
 
 // Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['userid'])) {
@@ -10,6 +11,9 @@ if (!isset($_SESSION['userid'])) {
 }
 
 $user_id = $_SESSION['userid'];
+$role = $_SESSION['role'] ?? 'user';
+$isAdmin = $role === 'admin';
+$isSupervisor = $role === 'supervisor';
 $policyWarning = '';
 if (isset($_SESSION['policy_message'])) {
     $policyWarning = $_SESSION['policy_message'];
@@ -32,8 +36,8 @@ if ($colCheckStmt && !sqlsrv_fetch_array($colCheckStmt, SQLSRV_FETCH_ASSOC)) {
     sqlsrv_free_stmt($colCheckStmt);
 }
 
-// Consultar evaluaciones; para administradores, mostrar todas
-if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin') {
+// Consultar evaluaciones; para administradores y supervisores, mostrar todas
+if ($isAdmin || $isSupervisor) {
     $query = "
         SELECT e.*,
                LTRIM(RTRIM(CASE
@@ -67,6 +71,11 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
     if (isset($row['fecha_evaluacion']) && $row['fecha_evaluacion'] instanceof DateTime) {
         $row['fecha_evaluacion'] = $row['fecha_evaluacion']->format('d-m-Y');
     }
+    if ($isSupervisor) {
+        $row = build_supervisor_display(anonymize_sensitive_fields($row));
+    } else {
+        $row = build_standard_display($row);
+    }
     $evaluaciones[] = $row;
 }
 sqlsrv_free_stmt($stmt);
@@ -98,11 +107,11 @@ sqlsrv_free_stmt($stmt);
             <!-- Contenedor con scroll -->
             <div class="list-group" id="evaluation-list" style="max-height:400px; overflow-y:auto;">
                 <?php foreach ($evaluaciones as $evaluacion): ?>
-                    <button class="list-group-item list-group-item-action" 
-                            data-name="<?php echo htmlspecialchars($evaluacion['nombre']); ?>" 
-                            data-rut="<?php echo htmlspecialchars($evaluacion['rut']); ?>" 
-                            onclick="showDetails(<?php echo $evaluacion['id']; ?>)">
-                        <?php echo htmlspecialchars($evaluacion['nombre']); ?> - <?php echo htmlspecialchars($evaluacion['rut']); ?>
+                    <button class="list-group-item list-group-item-action"
+                            data-name="<?php echo htmlspecialchars($evaluacion['display_name']); ?>"
+                            data-rut="<?php echo htmlspecialchars($evaluacion['display_rut']); ?>"
+                            onclick="showDetails(<?php echo (int) $evaluacion['id']; ?>)">
+                        <?php echo htmlspecialchars($evaluacion['display_name']); ?> - <?php echo htmlspecialchars($evaluacion['display_rut']); ?>
                     </button>
                 <?php endforeach; ?>
             </div>
@@ -114,9 +123,14 @@ sqlsrv_free_stmt($stmt);
                     Exportar
                 </button>
                 <div class="dropdown-menu w-100" aria-labelledby="exportDropdown">
-                    <a class="dropdown-item" href="exportar.php?tipo=bruto">En bruto</a>
+                    <?php if (!$isSupervisor): ?>
+                        <a class="dropdown-item" href="exportar.php?tipo=bruto">En bruto</a>
+                    <?php endif; ?>
                     <a class="dropdown-item" href="exportar.php?tipo=anonimizado">Anonimizado</a>
                 </div>
+                <?php if ($isSupervisor): ?>
+                    <small class="form-text text-muted">Los supervisores solo pueden exportar datos anonimizados.</small>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -132,6 +146,7 @@ sqlsrv_free_stmt($stmt);
 
 <script>
     const evaluationsData = <?php echo json_encode($evaluaciones); ?>;
+    const isSupervisor = <?php echo $isSupervisor ? 'true' : 'false'; ?>;
 
     function toggleSearchBar() {
         const searchBar = document.getElementById('search-bar');
@@ -144,19 +159,27 @@ sqlsrv_free_stmt($stmt);
         const detailDiv = document.getElementById('detail-info');
 
         if (evaluation) {
+            const identifierSection = isSupervisor
+                ? ''
+                : `<p><strong>Identificador:</strong> ${safeValue(evaluation.display_rut || evaluation.rut, 'No disponible')}</p>`;
             detailDiv.innerHTML = `
-                <h4>${evaluation.nombre}</h4>
-                <p><strong>Valoración de riesgo:</strong> ${evaluation.valoracion_global}</p>
+                <h4>${safeValue(evaluation.display_name || evaluation.nombre, 'Evaluación')}</h4>
+                <p><strong>Valoración de riesgo:</strong> ${safeValue(evaluation.valoracion_global, 'Sin información')}</p>
 
-                <p><strong>Edad:</strong> ${evaluation.edad}</p>
-                <p><strong>RUT:</strong> ${evaluation.rut}</p>
-                <p><strong>Fecha de Evaluación:</strong> ${evaluation.fecha_evaluacion}</p>
-                <p><strong>Evaluador:</strong> ${evaluation.evaluador_nombre}</p>
-                <a href="resumenb.php?evaluacion_id=${evaluation.id}" class="btn btn-primary">Ver Resumen</a>
+                <p><strong>Edad:</strong> ${safeValue(evaluation.edad, 'No registrada')}</p>
+                ${identifierSection}
+                <p><strong>Código de Caso:</strong> ${safeValue(evaluation.display_cod_nino || evaluation.cod_nino, 'No disponible')}</p>
+                <p><strong>Fecha de Evaluación:</strong> ${safeValue(evaluation.fecha_evaluacion, 'Sin registrar')}</p>
+                <p><strong>Evaluador:</strong> ${safeValue(evaluation.display_evaluador || evaluation.evaluador_nombre, 'No disponible')}</p>
+                ${evaluation.can_view_details ? `<a href="resumenb.php?evaluacion_id=${evaluation.id}" class="btn btn-primary">Ver Resumen</a>` : `<div class="alert alert-info mt-3">Los detalles completos están restringidos para mantener la anonimización.</div>`}
             `;
         } else {
             detailDiv.innerHTML = '<p>No hay detalles disponibles.</p>';
         }
+    }
+
+    function safeValue(value, fallback = 'No disponible') {
+        return (value === undefined || value === null || value === '') ? fallback : value;
     }
 
     function filterEvaluations() {
@@ -164,8 +187,8 @@ sqlsrv_free_stmt($stmt);
         const evaluationItems = document.querySelectorAll('.list-group-item');
 
         evaluationItems.forEach(item => {
-            const name = item.getAttribute('data-name').toLowerCase();
-            const rut = item.getAttribute('data-rut').toLowerCase();
+            const name = (item.getAttribute('data-name') || '').toLowerCase();
+            const rut = (item.getAttribute('data-rut') || '').toLowerCase();
             const combinedText = name + ' ' + rut;
             item.style.display = combinedText.includes(query) ? '' : 'none';
         });

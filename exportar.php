@@ -1,6 +1,7 @@
 <?php
 session_start();
 include_once("config.php");
+include_once("utils/anonymization.php");
 
 // Verificar si el usuario ha iniciado sesión
 if (!isset($_SESSION['userid'])) {
@@ -8,10 +9,18 @@ if (!isset($_SESSION['userid'])) {
     exit();
 }
 
+$role = $_SESSION['role'] ?? '';
+$isAdmin = $role === 'admin';
+$isSupervisor = $role === 'supervisor';
+
 // Obtener el tipo de exportación
 $tipo = $_GET['tipo'] ?? '';
 
-if (!in_array($tipo, ['bruto', 'anonimizado'])) {
+if ($isSupervisor) {
+    $tipo = 'anonimizado';
+}
+
+if (!in_array($tipo, ['bruto', 'anonimizado'], true)) {
     echo "Error: Tipo de exportación no válido.";
     exit();
 }
@@ -31,7 +40,7 @@ $query_base = "
 ";
 
 $params = [];
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!$isAdmin && !$isSupervisor) {
     $query_base .= " WHERE e.user_id = ?";
     $params[] = $_SESSION['userid'];
 }
@@ -46,24 +55,13 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
 }
 sqlsrv_free_stmt($stmt);
 
-// Modificar datos según el tipo de exportación
-if ($tipo === 'anonimizado') {
+// Modificar datos según el tipo de exportación o el rol
+$shouldAnonymize = ($tipo === 'anonimizado') || $isSupervisor;
+if ($shouldAnonymize) {
     foreach ($data as &$row) {
-        // Ocultar nombre
-        $row['nombre'] = 'ANONIMIZADO';
-
-        // Convertir RUT a un hash único (sin caracteres raros)
-        if (!empty($row['rut'])) {
-            $row['rut'] = substr(hash('md5', $row['rut']), 0, 32); // Genera un hash truncado a 10 caracteres
-        } else {
-            $row['rut'] = 'DESCONOCIDO';
-        }
-
-        // Ocultar fecha de nacimiento
-        $row['fecha_nacimiento'] = 'XXXX-XX-XX';
-
-        // La edad permanece sin cambios
+        $row = anonymize_sensitive_fields($row);
     }
+    unset($row);
 }
 
 // Generar CSV
