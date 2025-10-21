@@ -146,6 +146,7 @@ sqlsrv_free_stmt($stmt);
 
 <script>
     const evaluationsData = <?php echo json_encode($evaluaciones); ?>;
+    const isSupervisor = <?php echo $isSupervisor ? 'true' : 'false'; ?>;
 
     function toggleSearchBar() {
         const searchBar = document.getElementById('search-bar');
@@ -158,6 +159,9 @@ sqlsrv_free_stmt($stmt);
         const detailDiv = document.getElementById('detail-info');
 
         if (evaluation) {
+            const identifierSection = isSupervisor
+                ? ''
+                : `<p><strong>Identificador:</strong> ${safeValue(evaluation.display_rut || evaluation.rut, 'No disponible')}</p>`;
             detailDiv.innerHTML = `
                 <h4>${safeValue(evaluation.display_name || evaluation.nombre, 'Evaluación')}</h4>
                 <p><strong>Valoración de riesgo:</strong> ${safeValue(evaluation.valoracion_global, 'Sin información')}</p>
