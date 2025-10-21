@@ -15,6 +15,17 @@ include_once("header.php");
 // Inicializar arreglo para errores
 $errors = [];
 
+// Normaliza campos de fecha provenientes de la base de datos
+function normalizeDateFields(array $data): array {
+    foreach ($data as $key => $value) {
+        if ($value instanceof DateTimeInterface) {
+            $data[$key] = $value->format('Y-m-d');
+        }
+    }
+
+    return $data;
+}
+
 // Obtener datos existentes si hay un 'inserted_id' en la sesión
 $existing_data = [];
 $hasExistingEvaluation = false;
@@ -35,7 +46,7 @@ if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
 
             if ($canAccess) {
                 $_SESSION['inserted_id'] = $requestedId;
-                $existing_data = $row;
+                $existing_data = normalizeDateFields($row);
                 $hasExistingEvaluation = true;
                 $evaluacion_id = $requestedId;
             } else {
@@ -62,7 +73,7 @@ if (!$hasExistingEvaluation && isset($_SESSION['inserted_id']) && is_numeric($_S
     $stmt = sqlsrv_query($conn, $query, $params);
     if ($stmt !== false) {
         if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
-            $existing_data = $row;
+            $existing_data = normalizeDateFields($row);
             $hasExistingEvaluation = true;
         } else {
             unset($_SESSION['inserted_id']);
@@ -400,6 +411,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     sqlsrv_close($conn);
 }
+
+$fechaNacimientoValue = $_POST['fecha-nacimiento'] ?? ($existing_data['fecha_nacimiento'] ?? '');
+if ($fechaNacimientoValue instanceof DateTimeInterface) {
+    $fechaNacimientoValue = $fechaNacimientoValue->format('Y-m-d');
+}
+
+$fechaEvaluacionValue = $_POST['fecha-evaluacion'] ?? ($existing_data['fecha_evaluacion'] ?? '');
+if ($fechaEvaluacionValue instanceof DateTimeInterface) {
+    $fechaEvaluacionValue = $fechaEvaluacionValue->format('Y-m-d');
+}
 ?>
 
 <!DOCTYPE html>
@@ -486,7 +507,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                     <!-- Fecha de nacimiento -->
                     <div class="form-group col-md-4">
                         <label for="fecha-nacimiento" class="required">Fecha de Nacimiento</label>
-                        <input type="date" class="form-control <?php echo isset($errors['fecha_nacimiento']) ? 'is-invalid' : ''; ?>" id="fecha-nacimiento" name="fecha-nacimiento" value="<?php echo htmlspecialchars($_POST['fecha-nacimiento'] ?? $existing_data['fecha_nacimiento'] ?? ''); ?>" required>
+                        <input type="date" class="form-control <?php echo isset($errors['fecha_nacimiento']) ? 'is-invalid' : ''; ?>" id="fecha-nacimiento" name="fecha-nacimiento" value="<?php echo htmlspecialchars($fechaNacimientoValue); ?>" required>
                         <?php if (isset($errors['fecha_nacimiento'])): ?>
                             <div class="invalid-feedback">
                                 <?php echo htmlspecialchars($errors['fecha_nacimiento']); ?>
@@ -953,7 +974,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <!-- Fecha de evaluación -->
                 <div class="form-group">
                     <label for="fecha-evaluacion" class="required">Fecha de Evaluación</label>
-                    <input type="date" class="form-control <?php echo isset($errors['fecha_evaluacion']) ? 'is-invalid' : ''; ?>" id="fecha-evaluacion" name="fecha-evaluacion" value="<?php echo htmlspecialchars($_POST['fecha-evaluacion'] ?? $existing_data['fecha_evaluacion'] ?? ''); ?>" required>
+                    <input type="date" class="form-control <?php echo isset($errors['fecha_evaluacion']) ? 'is-invalid' : ''; ?>" id="fecha-evaluacion" name="fecha-evaluacion" value="<?php echo htmlspecialchars($fechaEvaluacionValue); ?>" required>
                     <?php if (isset($errors['fecha_evaluacion'])): ?>
                         <div class="invalid-feedback">
                             <?php echo htmlspecialchars($errors['fecha_evaluacion']); ?>
