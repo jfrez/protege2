@@ -13,7 +13,7 @@ if (!function_exists('anonymize_sensitive_fields')) {
     function anonymize_sensitive_fields(array $row): array
     {
         $hashFragments = ['rut', 'cod_nino', 'identificador', 'telefono', 'celular', 'dni', 'pasaporte'];
-        $maskFragments = ['nombre', 'apellido', 'evaluador', 'direccion', 'correo', 'email', 'apoderado', 'tutor', 'madre', 'padre', 'contacto', 'nacimiento'];
+        $maskFragments = ['nombre', 'apellido', 'direccion', 'correo', 'email', 'apoderado', 'tutor', 'madre', 'padre', 'contacto', 'nacimiento'];
 
         foreach ($row as $key => $value) {
             if ($value instanceof DateTime) {
