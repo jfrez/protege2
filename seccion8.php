@@ -23,6 +23,9 @@ $existing_data = $result->fetch_assoc();
 $stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
     $entorno_fisico = $_POST['entorno_fisico'] ?? 1;
     $politicas_programas = $_POST['politicas_programas'] ?? 1;
     $acceso_educacion = $_POST['acceso_educacion'] ?? 1;
@@ -62,6 +65,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container mt-5">
     <h3>Factores Protección Ambientales</h3>
     <form method="POST" action="seccion8.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
+        <?php csrf_input(); ?>
         <div class="accordion" id="accordionExampleProteccionAmbientales">
             <!-- Card 1 -->
             <div class="card">

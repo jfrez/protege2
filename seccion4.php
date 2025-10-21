@@ -23,6 +23,9 @@ $existing_data = $result->fetch_assoc();
 $stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
     $exclusion_social = $_POST['exclusion_social'] ?? 1;
     $pobreza_dificultades = $_POST['pobreza_dificultades'] ?? 1;
     $discriminacion = $_POST['discriminacion'] ?? 1;
@@ -60,6 +63,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container mt-5">
     <h3>Factores Riesgo Sociales</h3>
     <form method="POST" action="seccion4.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
+        <?php csrf_input(); ?>
         <div class="accordion" id="accordionExampleSociales">
             <!-- Card 1 -->
             <div class="card">

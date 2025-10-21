@@ -23,6 +23,9 @@ $existing_data = $result->fetch_assoc();
 $stmt->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
     $historia_salud_mental = $_POST['historia_salud_mental'] ?? 1;
     $abuso_sustancias = $_POST['abuso_sustancias'] ?? 1;
     $comportamiento_emocional = $_POST['comportamiento_emocional'] ?? 1;
@@ -59,6 +62,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <div class="container mt-5">
     <h3>Factores Personales</h3>
     <form method="POST" action="seccion2.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
+        <?php csrf_input(); ?>
         <div class="accordion" id="accordionExample">
             <!-- Card 1 -->
             <div class="card">

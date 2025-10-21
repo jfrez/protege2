@@ -31,6 +31,10 @@ $errors = [];
 
 // Procesamiento del formulario
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        ob_end_clean();
+        die('Invalid CSRF token');
+    }
     $valoracion_global = $_POST['valoracion_global'] ?? '';
     $comentarios = $_POST['comentarios'] ?? '';
     $obs_caracterizacion = $_POST['obs_caracterizacion'] ?? '';
@@ -345,6 +349,7 @@ function enlaceEdicion($dimension) {
         analizados, pues su peso y configuración es única en cada caso particular.
     </p>
     <form method="POST" action="">
+        <?php csrf_input(); ?>
         <div class="card mb-4">
             <div class="card-body">
                 <!-- Selección manual de nivel de riesgo (bajo, medio, alto) -->
