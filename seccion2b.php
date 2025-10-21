@@ -4,6 +4,7 @@ session_start();
 ob_start();
 include_once("config.php");
 include_once("header.php");
+include_once("utils/authorization.php");
 
 if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
     $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
@@ -37,6 +38,8 @@ if (!isset($_SESSION['inserted_id'])) {
 $evaluacion_id = isset($_SESSION['inserted_id']) ? (int) $_SESSION['inserted_id'] : null;
 $evaluacionIdQuery = $evaluacion_id !== null ? '?evaluacion_id=' . $evaluacion_id : '';
 
+verificarAccesoEvaluacion($conn, $evaluacion_id);
+
 // Mostrar el ID de la evaluación para debug (opcional)
 // echo $evaluacion_id;
 
@@ -54,6 +57,7 @@ $campos = [
 
 // Cargar valores existentes si ya hay datos en la base de datos
 $query = "SELECT * FROM factores_individuales WHERE evaluacion_id = ?";
+verificarAccesoEvaluacion($conn, $evaluacion_id);
 $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
 $existing_data = [];
 if ($stmt !== false) {
@@ -154,6 +158,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         // Verificar si ya existe un registro
         $query_check = "SELECT id FROM factores_individuales WHERE evaluacion_id = ?";
+        verificarAccesoEvaluacion($conn, $evaluacion_id);
         $stmt_check = sqlsrv_query($conn, $query_check, [$evaluacion_id]);
         $existing_data = $stmt_check !== false ? sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC) : [];
         if ($stmt_check !== false) {
@@ -177,6 +182,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $campos['terapia_nna'],
                 $evaluacion_id
             ];
+            verificarAccesoEvaluacion($conn, $evaluacion_id);
             $stmt = sqlsrv_query($conn, $query, $params);
         } else {
             // Insertar un nuevo registro
@@ -196,6 +202,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $campos['denuncias_ingresos_maltrato_previo'],
                 $campos['terapia_nna']
             ];
+            verificarAccesoEvaluacion($conn, $evaluacion_id);
             $stmt = sqlsrv_query($conn, $query, $params);
         }
 

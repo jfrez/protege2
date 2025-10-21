@@ -4,6 +4,7 @@ session_start();
 ob_start();
 include_once("config.php");
 include_once("header.php");
+include_once("utils/authorization.php");
 
 if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
     $_SESSION['inserted_id'] = (int) $_GET['evaluacion_id'];
@@ -34,6 +35,8 @@ if (!isset($_SESSION['inserted_id'])) {
 $evaluacion_id = isset($_SESSION['inserted_id']) ? (int) $_SESSION['inserted_id'] : null;
 $evaluacionIdQuery = $evaluacion_id !== null ? '?evaluacion_id=' . $evaluacion_id : '';
 
+verificarAccesoEvaluacion($conn, $evaluacion_id);
+
 // Inicializar variables para almacenar mensajes de error
 $errors = [];
 
@@ -58,6 +61,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     if (empty($errors)) {
         // Verificar si ya existe un registro en factores_contextuales para esta evaluación
         $query_check = "SELECT id FROM dbo.factores_contextuales WHERE evaluacion_id = ?";
+        verificarAccesoEvaluacion($conn, $evaluacion_id);
         $stmt_check = sqlsrv_query($conn, $query_check, [$evaluacion_id]);
         $existing_data = $stmt_check !== false ? sqlsrv_fetch_array($stmt_check, SQLSRV_FETCH_ASSOC) : [];
         if ($stmt_check !== false) {
@@ -77,6 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $campos['involucramiento_previo_servicio_proteccion'],
                 $evaluacion_id
             ];
+            verificarAccesoEvaluacion($conn, $evaluacion_id);
             $stmt = sqlsrv_query($conn, $query, $params);
         } else {
             // Insertar un nuevo registro
@@ -92,6 +97,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $campos['presencia_pares_confianza_nna'],
                 $campos['involucramiento_previo_servicio_proteccion']
             ];
+            verificarAccesoEvaluacion($conn, $evaluacion_id);
             $stmt = sqlsrv_query($conn, $query, $params);
         }
 
@@ -108,6 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 } else {
     // Si no se ha enviado el formulario, verificar si ya existe un registro
     $query = "SELECT * FROM dbo.factores_contextuales WHERE evaluacion_id = ?";
+    verificarAccesoEvaluacion($conn, $evaluacion_id);
     $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
     $existing_data = $stmt !== false ? sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC) : [];
     if ($stmt !== false) {

@@ -4,6 +4,7 @@ session_start();
 ob_start();
 include_once("config.php");
 include_once("header.php");
+include_once("utils/authorization.php");
 
 // Posible cambio o carga de evaluación actual mediante GET
 if (isset($_GET['evaluacion_id'])) {
@@ -23,6 +24,8 @@ if (!isset($_SESSION['inserted_id'])) {
 
 $evaluacion_id = $_SESSION['inserted_id'];
 
+verificarAccesoEvaluacion($conn, $evaluacion_id);
+
 // Arreglo para almacenar posibles errores
 $errors = [];
 
@@ -38,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (empty($errors)) {
+        verificarAccesoEvaluacion($conn, $evaluacion_id);
         $query = "UPDATE dbo.evaluacion SET valoracion_global = ?, obs_caracterizacion = ?, obs_variables_extra = ? WHERE id = ?";
         $params = [$valoracion_global, $obs_caracterizacion, $obs_variables_extra, $evaluacion_id];
         $stmt = sqlsrv_query($conn, $query, $params);
@@ -58,6 +62,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
  * de factores (individuales, familiares, contextuales).
  */
 function obtenerFactores($tabla, $evaluacion_id, $conn) {
+    verificarAccesoEvaluacion($conn, $evaluacion_id);
     $query = "SELECT * FROM $tabla WHERE evaluacion_id = ?";
     $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
     if ($stmt === false) {
@@ -79,6 +84,7 @@ $query = "SELECT valoracion_global,
                  obs_variables_extra
           FROM dbo.evaluacion
           WHERE id = ?";
+verificarAccesoEvaluacion($conn, $evaluacion_id);
 $stmt = sqlsrv_query($conn, $query, [$evaluacion_id]);
 if ($stmt !== false) {
     $row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC);
