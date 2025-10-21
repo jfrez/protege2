@@ -48,7 +48,7 @@ if (isset($_SESSION['userid'])) {
         <span class="navbar-text mr-2" style="white-space: nowrap;">
             <?php echo htmlspecialchars($_SESSION['name']); ?>
         </span>
-<?php if(isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
+<?php if(isset($_SESSION['role']) && in_array($_SESSION['role'], ['admin', 'supervisor'], true)): ?>
             <a class="nav-link" href="user_management.php" style="color: var(--udp-white);">Gestión Usuarios</a>
             <a class="nav-link" href="evaluation_report.php" style="color: var(--udp-white);">Reporte Evaluaciones</a>
         <?php endif; ?>

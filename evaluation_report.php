@@ -1,6 +1,6 @@
 <?php
 include_once("config.php");
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'supervisor'], true)) {
     header('Location: login.php');
     exit();
 }
