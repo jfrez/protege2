@@ -1,9 +1,11 @@
 <?php
 include_once("config.php");
-if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+if (!isset($_SESSION['role']) || !in_array($_SESSION['role'], ['admin', 'supervisor'], true)) {
     header('Location: login.php');
     exit();
 }
+
+$allowedRoles = ['user', 'admin', 'supervisor'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
@@ -17,6 +19,9 @@ if (isset($_POST['create'])) {
     $lastname = $_POST['last_name'];
     $email = $_POST['email'];
     $role = $_POST['role'];
+    if (!in_array($role, $allowedRoles, true)) {
+        die('Rol no válido');
+    }
     $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
     $sql = "INSERT INTO users (name, last_name, email, password, role) VALUES (?, ?, ?, ?, ?)";
     $params = array($name, $lastname, $email, $password, $role);
@@ -30,6 +35,9 @@ if (isset($_POST['update'])) {
     $lastname = $_POST['last_name'];
     $email = $_POST['email'];
     $role = $_POST['role'];
+    if (!in_array($role, $allowedRoles, true)) {
+        die('Rol no válido');
+    }
 
     if (!empty($_POST['password'])) {
         $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
@@ -131,6 +139,7 @@ include_once("header.php");
             <select name="role" class="form-control">
               <option value="user">user</option>
               <option value="admin">admin</option>
+              <option value="supervisor">supervisor</option>
             </select>
           </div>
         </div>
@@ -177,6 +186,7 @@ include_once("header.php");
             <select name="role" id="editRole" class="form-control">
               <option value="user">user</option>
               <option value="admin">admin</option>
+              <option value="supervisor">supervisor</option>
             </select>
           </div>
           <input type="hidden" name="userid" id="editUserId">

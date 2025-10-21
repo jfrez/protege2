@@ -48,7 +48,7 @@ if (!function_exists('build_supervisor_display')) {
         $row['display_rut'] = hash_identifier($row['rut'] ?? '');
         $row['display_cod_nino'] = hash_identifier($row['cod_nino'] ?? '');
         $row['display_evaluador'] = 'Equipo Evaluador';
-        $row['can_view_details'] = true;
+        $row['can_view_details'] = false;
 
         return $row;
     }

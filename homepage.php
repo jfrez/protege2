@@ -167,7 +167,7 @@ sqlsrv_free_stmt($stmt);
                 <p><strong>Valoración de riesgo:</strong> ${safeValue(evaluation.valoracion_global, 'Sin información')}</p>
 
                 <p><strong>Edad:</strong> ${safeValue(evaluation.edad, 'No registrada')}</p>
-                ${identifierSection}
+                <p><strong>Identificador:</strong> ${safeValue(evaluation.display_rut || evaluation.rut, 'No disponible')}</p>
                 <p><strong>Código de Caso:</strong> ${safeValue(evaluation.display_cod_nino || evaluation.cod_nino, 'No disponible')}</p>
                 <p><strong>Fecha de Evaluación:</strong> ${safeValue(evaluation.fecha_evaluacion, 'Sin registrar')}</p>
                 <p><strong>Evaluador:</strong> ${safeValue(evaluation.display_evaluador || evaluation.evaluador_nombre, 'No disponible')}</p>
