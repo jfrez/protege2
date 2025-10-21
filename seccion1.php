@@ -19,7 +19,39 @@ $errors = [];
 $existing_data = [];
 $hasExistingEvaluation = false;
 
-if (isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
+// Permitir cargar una evaluación existente directamente mediante parámetro GET
+if (isset($_GET['evaluacion_id']) && is_numeric($_GET['evaluacion_id'])) {
+    $requestedId = (int) $_GET['evaluacion_id'];
+    $query = "SELECT * FROM dbo.evaluacion WHERE id = ?";
+    $stmt = sqlsrv_query($conn, $query, [$requestedId]);
+    if ($stmt !== false) {
+        if ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+            $userId = $_SESSION['userid'] ?? null;
+            $canAccess = in_array($role, ['admin', 'supervisor'], true);
+            if (!$canAccess && $userId !== null && isset($row['user_id'])) {
+                $canAccess = ((int) $row['user_id']) === ((int) $userId);
+            }
+
+            if ($canAccess) {
+                $_SESSION['inserted_id'] = $requestedId;
+                $existing_data = $row;
+                $hasExistingEvaluation = true;
+            } else {
+                $errors['general'] = "No tienes permiso para acceder a esta evaluación.";
+                unset($_SESSION['inserted_id']);
+            }
+        } else {
+            $errors['general'] = "No se encontró la evaluación solicitada.";
+            unset($_SESSION['inserted_id']);
+        }
+        sqlsrv_free_stmt($stmt);
+    } else {
+        $errors['general'] = "Error al buscar la evaluación: " . print_r(sqlsrv_errors(), true);
+        unset($_SESSION['inserted_id']);
+    }
+}
+
+if (!$hasExistingEvaluation && isset($_SESSION['inserted_id']) && is_numeric($_SESSION['inserted_id'])) {
     $evaluacion_id = (int) $_SESSION['inserted_id'];
 
     // Recuperar datos existentes
