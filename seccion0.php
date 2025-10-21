@@ -1,6 +1,17 @@
 <?php
 session_start();
 
+// Al iniciar una nueva evaluación, reiniciar cualquier dato previo almacenado en la sesión
+if (isset($_SESSION['inserted_id'])) {
+    unset($_SESSION['inserted_id']);
+}
+if (isset($_SESSION['form_data'])) {
+    unset($_SESSION['form_data']);
+}
+if (isset($_SESSION['token'])) {
+    unset($_SESSION['token']);
+}
+
 // Incluye la cabecera, donde posiblemente tienes tus <head>, estilos, etc.
 include_once("header.php");
 ?>
