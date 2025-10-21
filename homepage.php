@@ -72,7 +72,9 @@ while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
         $row['fecha_evaluacion'] = $row['fecha_evaluacion']->format('d-m-Y');
     }
     if ($isSupervisor) {
-        $row = build_supervisor_display(anonymize_sensitive_fields($row));
+        $originalEvaluatorName = trim((string) ($row['evaluador_nombre'] ?? $row['evaluador'] ?? ''));
+        $row = anonymize_sensitive_fields($row);
+        $row = build_supervisor_display($row, $originalEvaluatorName);
     } else {
         $row = build_standard_display($row);
     }
