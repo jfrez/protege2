@@ -142,6 +142,10 @@ $factores = [
 
 // Procesar el formulario al enviarlo
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        ob_end_clean();
+        die('Invalid CSRF token');
+    }
     // Recorrer los campos y validar que no vengan vacíos
     foreach ($campos as $campo => $valor) {
         $campos[$campo] = $_POST[$campo] ?? '';
@@ -225,7 +229,8 @@ sqlsrv_close($conn);
     <?php endif; ?>
 
     <form method="POST" action="seccion2b.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
-      
+        <?php csrf_input(); ?>
+
 
 <?php foreach ($factores as $campo => $data): ?>
     <div class="card mb-4">

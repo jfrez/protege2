@@ -46,6 +46,10 @@ $campos = [
 
 // Procesar el formulario al enviarlo
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        ob_end_clean();
+        die('Invalid CSRF token');
+    }
     // Obtener los valores enviados desde el formulario
     foreach ($campos as $campo => $valor) {
         $campos[$campo] = $_POST[$campo] ?? '';
@@ -178,6 +182,7 @@ $factores = [
     <?php endif; ?>
 
     <form method="POST" action="seccion4b.php<?= htmlspecialchars($evaluacionIdQuery); ?>">
+        <?php csrf_input(); ?>
         <?php foreach ($factores as $campo => $data): ?>
             <div class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-start">

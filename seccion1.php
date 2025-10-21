@@ -83,6 +83,10 @@ if (!$hasExistingEvaluation && isset($_SESSION['inserted_id']) && is_numeric($_S
 }
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        ob_end_clean();
+        die('Invalid CSRF token');
+    }
     // Recibir y sanitizar datos del formulario
     $nombre = trim($_POST['nombre'] ?? '');
     $rut = trim($_POST['rut'] ?? '');
@@ -462,6 +466,7 @@ if ($fechaEvaluacionValue instanceof DateTimeInterface) {
     <?php endif; ?>
 
     <form method="POST" action="">
+        <?php csrf_input(); ?>
         <!-- Información Personal -->
         <div class="card form-section">
             <div class="card-header">

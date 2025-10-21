@@ -1,8 +1,12 @@
 <?php
 session_start();
+include_once "config.php";
 
 // Check if data has been submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (!verify_csrf_token($_POST['csrf_token'] ?? '')) {
+        die('Invalid CSRF token');
+    }
     // Retrieve and sanitize input data
     $name = htmlspecialchars($_POST['name']);
     $middleName = htmlspecialchars($_POST['middleName']);
@@ -36,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Navigation to the next part
     echo '<h2>Factores de Riesgo</h2>';
     echo '<form method="POST" action="nextpage_riesgo.php">';
+    csrf_input();
     echo '<h3>Factores Personales</h3>';
     foreach ([
         "Historia Familiar de Problemas de Salud Mental",
